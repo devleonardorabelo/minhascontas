@@ -41,6 +41,7 @@ decisões descartadas e o número que as descartou:
 | [specs/02-ia.md](specs/02-ia.md) | prompt, contrato da tool, custo, PDF protegido |
 | [specs/03-orcamento.md](specs/03-orcamento.md) | projeção de recorrentes e parcelas, regra do veredicto |
 | [specs/04-ux.md](specs/04-ux.md) | a persona, os 11 achados de UX, requisitos E1–E10 (aplicados) e a direção de UI |
+| [specs/05-design-system.md](specs/05-design-system.md) | Modernist: tokens, tipografia, componentes e a divergência medida |
 
 ## Mapa
 
@@ -51,8 +52,8 @@ src/store.ts            AsyncStorage + useSyncExternalStore
 src/budget.ts           motor de orçamento — puro, testado, zero token
 src/ai.ts               a ÚNICA chamada de API do app
 src/readFile.ts(.web)   base64 do arquivo, um por plataforma
-src/ui.tsx              cores e componentes
-src/screens/            Resumo, Adicionar, Lancamentos, Ajustes
+src/ui.tsx              tokens e componentes do Modernist
+src/screens/            Resumo, Adicionar, Conferir, Extrato, Ajustes, Comecar
 tests/budget.test.ts    node --test, sem framework
 ```
 
@@ -101,10 +102,14 @@ Cada uma custou uma sessão. Não reintroduza:
   (`arquivo.ts` / `arquivo.web.ts`), que é como `readFile` faz.
 - **O header `anthropic-dangerous-direct-browser-access` vai sempre.** Sem ele o
   navegador barra a chamada no CORS; no nativo ele é inofensivo. Há teste.
-- **Cor vem de `useC()`, nunca de hex na tela.** São dois temas, e toda combinação
-  de texto sobre superfície foi medida em AA. Um hex solto passa no typecheck e
-  quebra num dos temas — que é o bug que ninguém vê, porque ninguém testa os dois.
-- **`TAP = 48` é piso, não sugestão.** Botão, chip, campo, linha tocável e aba.
+- **Cor vem de `useC()`, nunca de hex na tela.** Toda combinação de texto sobre
+  superfície foi medida em AA; um hex solto passa no typecheck e quebra o sistema.
+- **Peso de fonte é `F(400|600|800)`, nunca `fontWeight`.** Fonte custom não
+  sintetiza peso no React Native: com Archivo carregada, `fontWeight: '800'` sai
+  fino e ninguém percebe até comparar com o design.
+- **Raio 0 em tudo.** Um `borderRadius` no diff é regressão do Modernist.
+- **`TAP = 56` é piso.** Botão, aba e chip grande; 44 em chip de categoria e
+  campo de linha.
 - **Prompt de fatura é frágil.** Detalhar mais uma regra já derrubou a precisão de
   99,7% para 92% numa fatura real. Mexeu no prompt de `invoice`? Rode contra uma
   fatura de verdade e compare o total declarado antes de commitar. As quatro
@@ -113,8 +118,9 @@ Cada uma custou uma sessão. Não reintroduza:
 
 ## Antes de mexer na interface
 
-Leia [specs/04-ux.md](specs/04-ux.md). Toda mudança de UI deve citar o requisito
-que atende (E1–E10, I1–I6) ou o achado que corrige (A–K). Mudança de UI sem
+Leia [specs/04-ux.md](specs/04-ux.md) e [specs/05-design-system.md](specs/05-design-system.md).
+Toda mudança de UI deve citar o requisito que atende (E1–E10, I1–I6), o achado que
+corrige (A–K) ou a regra do design system. Mudança de UI sem
 requisito é gosto pessoal, e gosto pessoal não sobrevive à próxima sessão.
 
 A lista "o que não mudar" no fim da spec existe porque reforma de UI costuma

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import * as DocumentPicker from 'expo-document-picker';
-import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { Modal, Pressable, Text, TextInput, View } from 'react-native';
 import { addTx, newId, useDB } from '../store';
 import {
   diffTx,
@@ -11,12 +11,14 @@ import {
   type ExtractWarning,
 } from '../ai';
 import { readBase64 } from '../readFile';
-import { brl, todayISO } from '../budget';
-import { Btn, Card, Chip, H, Input, Meta, SP, mono, st, useC } from '../ui';
+import { brl, monthLabel, monthOf, todayISO } from '../budget';
+import { Btn, Chip, F, Input, Kicker, Meta, PAD, SP, mono, useC } from '../ui';
+import Conferir from './Conferir';
 import type { Tx } from '../types';
 
 const ACCEPT = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
 const PADRAO = ['Mercado', 'Alimentação', 'Transporte', 'Moradia', 'Saúde', 'Outros'];
+const TECLAS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', ',', '0', '←'];
 
 export default function Adicionar() {
   const C = useC();
@@ -25,14 +27,13 @@ export default function Adicionar() {
   const [valor, setValor] = useState('');
   const [cat, setCat] = useState('');
   const [nota, setNota] = useState('');
+  const [folha, setFolha] = useState(false);
   const [texto, setTexto] = useState('');
-  const [aiAberto, setAiAberto] = useState(false);
   const [preview, setPreview] = useState<Tx[]>([]);
   const [busy, setBusy] = useState<'' | 'text' | 'file'>('');
   const [err, setErr] = useState('');
   const [aviso, setAviso] = useState<ExtractWarning | null>(null);
 
-  // As categorias que ela mais usa vêm primeiro; o resto completa a lista.
   const cats = useMemo(() => {
     const uso = new Map<string, number>();
     for (const t of db.tx) {
@@ -44,8 +45,20 @@ export default function Adicionar() {
     return [...new Set([...usadas, ...base])].slice(0, 6);
   }, [db.tx, tipo]);
 
-  const n = Number(valor.replace(/\./g, '').replace(',', '.'));
+  const n = Number(valor.replace(',', '.'));
   const podeAnotar = Number.isFinite(n) && n > 0;
+
+  /** Teclado próprio: o do sistema cobre o botão de confirmar e força a tela a rolar. */
+  const tecla = (k: string) => {
+    if (k === '←') return setValor((v) => v.slice(0, -1));
+    if (k === ',') return setValor((v) => (v.includes(',') ? v : (v || '0') + ','));
+    setValor((v) => {
+      const [, dec] = v.split(',');
+      if (dec !== undefined && dec.length >= 2) return v;
+      if (v === '0') return k;
+      return (v + k).slice(0, 10);
+    });
+  };
 
   const anotar = () => {
     if (!podeAnotar) return;
@@ -73,6 +86,7 @@ export default function Adicionar() {
       const { items, warning } = await fn();
       setPreview((p) => [...p, ...items]);
       setAviso(warning ?? null);
+      setFolha(false);
     } catch (e: any) {
       setErr(e instanceof MissingKey ? e.message : e?.message || 'Não deu certo. Tenta de novo.');
     } finally {
@@ -89,15 +103,15 @@ export default function Adicionar() {
         : { items: localParse(t) };
       if (!r.items.length)
         throw new Error(
-          'Sem a chave configurada eu só entendo frases como "mercado 32,90". Anotar o valor aí em cima funciona sempre.'
+          'Sem a chave configurada eu só entendo frases como "mercado 32,90". O teclado da tela funciona sempre.'
         );
       setTexto('');
       return r;
     }, 'text');
   };
 
-  // O seletor de arquivo fica FORA do `busy`: no web o cancelamento não volta de
-  // forma confiável, e o botão ficaria girando para sempre se ela desistisse.
+  // O seletor fica FORA do `busy`: no web o cancelamento não volta de forma
+  // confiável e o botão ficaria girando para sempre.
   const onFile = async () => {
     const r = await DocumentPicker.getDocumentAsync({ type: ACCEPT, multiple: true });
     if (r.canceled || !r.assets?.length) return;
@@ -114,244 +128,215 @@ export default function Adicionar() {
     }, 'file');
   };
 
-  const total = preview.reduce((s, t) => s + (t.type === 'income' ? t.amount : -t.amount), 0);
-
-  const setAmount = (id: string, v: string) => {
-    const x = Number(v.replace(/\./g, '').replace(',', '.'));
-    setPreview((p) => p.map((t) => (t.id === id ? { ...t, amount: Number.isFinite(x) ? x : 0 } : t)));
-  };
-
-  const salvar = () => {
-    addTx(preview.filter((t) => t.amount > 0));
-    setPreview([]);
-    setAviso(null);
-  };
-
   return (
-    <ScrollView
-      contentContainerStyle={{ padding: SP.lg, gap: SP.md, paddingBottom: 48 }}
-      keyboardShouldPersistTaps="handled">
-      {/* caminho principal: dois toques e um número, sem depender de chave de API */}
-      <Card>
-        <View style={{ flexDirection: 'row', gap: SP.sm }}>
-          <Chip
-            label="Saiu"
-            selected={tipo === 'expense'}
-            onPress={() => {
-              setTipo('expense');
-              setCat('');
-            }}
-            style={{ flex: 1, alignItems: 'center' }}
-          />
-          <Chip
-            label="Entrou"
-            selected={tipo === 'income'}
-            onPress={() => {
-              setTipo('income');
-              setCat('');
-            }}
-            style={{ flex: 1, alignItems: 'center' }}
-          />
+    <View style={{ flex: 1 }}>
+      {/* 1 — saiu / entrou */}
+      <View style={{ flexDirection: 'row', borderBottomWidth: 2, borderBottomColor: C.rule }}>
+        {(['expense', 'income'] as const).map((t) => {
+          const ativa = tipo === t;
+          return (
+            <Pressable
+              key={t}
+              onPress={() => {
+                setTipo(t);
+                setCat('');
+              }}
+              accessibilityRole="tab"
+              accessibilityLabel={t === 'expense' ? 'Saiu' : 'Entrou'}
+              accessibilityState={{ selected: ativa }}
+              style={({ pressed }) => [
+                { flex: 1, height: 52, alignItems: 'center', justifyContent: 'center' },
+                ativa ? { backgroundColor: C.text } : pressed ? { backgroundColor: 'rgba(32,30,29,0.07)' } : null,
+              ]}>
+              <Text style={[F(ativa ? 800 : 600), { fontSize: 14, color: ativa ? C.bg : C.dim }]}>
+                {t === 'expense' ? 'Saiu' : 'Entrou'}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
+
+      {/* 2 — valor */}
+      <View style={{ paddingHorizontal: PAD, paddingTop: 16, paddingBottom: 12, gap: 2 }}>
+        <Kicker>Quanto</Kicker>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: SP.sm }}>
+          <Text style={[F(800), { fontSize: 26, color: C.dimmer }]}>R$</Text>
+          <Text
+            style={[F(800), mono, { fontSize: 62, letterSpacing: -1.8, color: C.text }]}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            accessibilityLabel={`Valor ${valor || '0'}`}>
+            {valor || '0'}
+          </Text>
+          <View style={{ width: 3, height: 52, backgroundColor: C.accent }} />
         </View>
+      </View>
 
-        <TextInput
-          value={valor}
-          onChangeText={setValor}
-          placeholder="0,00"
-          placeholderTextColor={C.dim}
-          keyboardType="decimal-pad"
-          inputMode="decimal"
-          accessibilityLabel="Valor"
-          style={[
-            st.input,
-            mono,
-            {
-              backgroundColor: C.card2,
-              borderColor: C.line,
-              color: tipo === 'income' ? C.good : C.text,
-              fontSize: 34,
-              fontWeight: '700',
-              textAlign: 'center',
-              minHeight: 72,
-            },
-          ]}
-        />
-
+      {/* 3 — em quê */}
+      <View style={{ paddingHorizontal: PAD, paddingBottom: 12, gap: SP.sm }}>
+        <Kicker>Em quê</Kicker>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: SP.sm }}>
           {cats.map((c) => (
             <Chip key={c} label={c} selected={cat === c} onPress={() => setCat(c)} />
           ))}
         </View>
-
-        <Input
+        <TextInput
           value={nota}
           onChangeText={setNota}
-          placeholder={cat || 'Um lembrete, se quiser'}
-          label="O que foi (opcional)"
+          placeholder="Um lembrete, se quiser"
+          placeholderTextColor={C.dimmer}
+          accessibilityLabel="Um lembrete, se quiser"
+          selectionColor={C.accent}
+          style={[
+            F(400),
+            {
+              minHeight: 44,
+              borderWidth: 1,
+              borderColor: C.line,
+              backgroundColor: C.surface,
+              color: C.text,
+              fontSize: 15,
+              paddingHorizontal: 12,
+            },
+          ]}
         />
+      </View>
 
+      {/* 4 — teclado próprio */}
+      <View style={{ flex: 1, borderTopWidth: 1, borderTopColor: C.lineSoft }}>
+        {[0, 1, 2, 3].map((linha) => (
+          <View key={linha} style={{ flex: 1, flexDirection: 'row' }}>
+            {TECLAS.slice(linha * 3, linha * 3 + 3).map((k, col) => (
+              <Pressable
+                key={k}
+                onPress={() => tecla(k)}
+                accessibilityRole="button"
+                accessibilityLabel={k === '←' ? 'Apagar um dígito' : k === ',' ? 'Vírgula' : k}
+                style={({ pressed }) => [
+                  {
+                    flex: 1,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderBottomWidth: linha === 3 ? 0 : 1,
+                    borderBottomColor: C.lineSoft,
+                    borderRightWidth: col === 2 ? 0 : 1,
+                    borderRightColor: C.lineSoft,
+                  },
+                  pressed && { backgroundColor: 'rgba(32,30,29,0.07)' },
+                ]}>
+                <Text
+                  style={[F(800), mono, { fontSize: 26, color: k === '←' ? C.accentInk : C.text }]}>
+                  {k}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        ))}
+      </View>
+
+      {/* 5 — confirmar */}
+      <View style={{ paddingHorizontal: PAD, paddingVertical: 12, gap: SP.sm }}>
+        {err ? <Text style={[F(600), { fontSize: 14, color: C.accentInk, lineHeight: 20 }]}>{err}</Text> : null}
         <Btn
-          label={tipo === 'income' ? 'Anotar entrada' : 'Anotar gasto'}
+          label={podeAnotar ? `Anotar ${brl(n)}` : tipo === 'income' ? 'Anotar entrada' : 'Anotar gasto'}
           onPress={anotar}
           disabled={!podeAnotar}
           hint="Guarda no aparelho, na hora"
         />
-        <Meta>Anotado com a data de hoje. Fica só neste aparelho.</Meta>
-      </Card>
-
-      {/* atalhos: aceleram quem tem chave, mas nunca são a porta de entrada */}
-      <Card>
-        <H>Atalhos</H>
-        <Btn
-          label="Mandar fatura ou conta"
-          kind="ghost"
-          onPress={onFile}
-          busy={busy === 'file'}
-          disabled={busy !== ''}
-          hint="Fatura, conta ou contracheque, em PDF ou foto. Pode mandar vários."
-        />
-        <Pressable
-          onPress={() => setAiAberto((v) => !v)}
-          accessibilityRole="button"
-          accessibilityState={{ expanded: aiAberto }}
-          style={({ pressed }) => [
-            { minHeight: 44, justifyContent: 'center' },
-            pressed && { opacity: 0.6 },
-          ]}>
-          <Text style={{ color: C.accent, fontSize: 15, fontWeight: '600' }}>
-            {aiAberto ? 'Fechar' : 'Escrever em vez de digitar o valor'}
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: SP.md }}>
+          <Meta style={{ flex: 1 }}>Fica só neste aparelho, na hora.</Meta>
+          <Text
+            onPress={() => setFolha(true)}
+            accessibilityRole="button"
+            accessibilityLabel="Mandar fatura, conta ou contracheque"
+            style={[F(800), { fontSize: 13, color: C.accentInk }]}>
+            Mandar fatura →
           </Text>
-        </Pressable>
-        {aiAberto ? (
-          <>
-            <TextInput
-              value={texto}
-              onChangeText={setTexto}
-              placeholder={'Ex: almoço 32,90 hoje\nEx: recebi 1200 de bico ontem'}
-              placeholderTextColor={C.dim}
-              multiline
-              accessibilityLabel="Escreva o gasto"
-              style={[
-                st.input,
-                {
-                  backgroundColor: C.card2,
-                  borderColor: C.line,
-                  color: C.text,
-                  minHeight: 88,
-                  textAlignVertical: 'top',
-                },
-              ]}
-            />
-            <Btn
-              label="Entender o que escrevi"
-              kind="ghost"
-              onPress={onText}
-              busy={busy === 'text'}
-              disabled={!texto.trim() || busy !== ''}
-            />
-          </>
-        ) : null}
-        {!db.settings.apiKey.trim() ? (
-          <Meta>Ler documento precisa da chave em Ajustes. Anotar na mão funciona sempre.</Meta>
-        ) : null}
-      </Card>
+        </View>
+      </View>
 
-      {err ? (
-        <Card tone="bad">
-          <Text style={{ color: C.bad, fontSize: 15, lineHeight: 21 }}>{err}</Text>
-        </Card>
-      ) : null}
-
-      {aviso && preview.length > 0 ? (
-        <Card tone="warn">
-          <Text style={{ color: C.warn, fontSize: 15, lineHeight: 21 }}>{aviso.text}</Text>
-          {aviso.diff ? (
-            <Btn
-              label={`Lançar a diferença de ${brl(Math.abs(aviso.diff))}`}
-              kind="ghost"
-              onPress={() => {
-                setPreview((p) => [...p, diffTx(aviso.diff!, aviso.dueDate)]);
-                setAviso(null);
-              }}
-            />
-          ) : null}
-        </Card>
-      ) : null}
-
-      {preview.length > 0 ? (
-        <Card>
-          <H
-            right={
-              <Text
-                style={[
-                  { color: total < 0 ? C.bad : C.good, fontWeight: '700', fontSize: 16 },
-                  mono,
-                ]}>
-                {brl(total)}
-              </Text>
-            }>
-            Confira {preview.length} {preview.length === 1 ? 'lançamento' : 'lançamentos'}
-          </H>
-          {preview.map((t) => (
-            <View key={t.id} style={{ flexDirection: 'row', alignItems: 'center', gap: SP.md }}>
-              <View style={{ flex: 1 }}>
-                <Text style={{ color: C.text, fontSize: 15 }} numberOfLines={1}>
-                  {t.description}
-                </Text>
-                <Meta>
-                  {t.date.slice(8, 10)}/{t.date.slice(5, 7)} · {t.category}
-                  {t.installment ? ` · ${t.installment}` : ''}
-                  {t.dueDate ? ` · vence ${t.dueDate.slice(8, 10)}/${t.dueDate.slice(5, 7)}` : ''}
-                </Meta>
-              </View>
-              <TextInput
-                defaultValue={String(t.amount).replace('.', ',')}
-                onChangeText={(v) => setAmount(t.id, v)}
-                keyboardType="decimal-pad"
-                inputMode="decimal"
-                accessibilityLabel={`Valor de ${t.description}`}
-                style={[
-                  st.input,
-                  mono,
-                  {
-                    width: 104,
-                    minHeight: 44,
-                    paddingVertical: SP.sm,
-                    paddingHorizontal: SP.sm,
-                    textAlign: 'right',
-                    fontSize: 15,
-                    backgroundColor: C.card2,
-                    borderColor: C.line,
-                    color: t.type === 'income' ? C.good : C.text,
-                  },
-                ]}
-              />
-              <Pressable
-                onPress={() => setPreview((p) => p.filter((x) => x.id !== t.id))}
-                accessibilityRole="button"
-                accessibilityLabel={`Tirar ${t.description} da lista`}
-                hitSlop={12}
-                style={({ pressed }) => [
-                  { width: 32, height: 44, alignItems: 'center', justifyContent: 'center' },
-                  pressed && { opacity: 0.5 },
-                ]}>
-                <Text style={{ color: C.dim, fontSize: 22 }}>×</Text>
-              </Pressable>
-            </View>
-          ))}
-          <View style={{ flexDirection: 'row', gap: SP.sm }}>
-            <Btn label="Salvar" onPress={salvar} style={{ flex: 1 }} />
-            <Btn
-              label="Jogar fora"
-              kind="ghost"
-              onPress={() => {
-                setPreview([]);
-                setAviso(null);
-              }}
-            />
+      {/* folha de importação */}
+      <Modal visible={folha} transparent animationType="slide" onRequestClose={() => setFolha(false)}>
+        <Pressable style={{ flex: 1, backgroundColor: 'rgba(32,30,29,0.5)' }} onPress={() => setFolha(false)} />
+        <View style={{ backgroundColor: C.bg, borderTopWidth: 2, borderTopColor: C.rule, padding: PAD, gap: SP.md }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Kicker>Mandar para eu ler</Kicker>
+            <Text
+              onPress={() => setFolha(false)}
+              accessibilityRole="button"
+              style={[F(800), { fontSize: 13, color: C.accentInk }]}>
+              Fechar
+            </Text>
           </View>
-        </Card>
-      ) : null}
-    </ScrollView>
+          <Btn
+            label="Escolher arquivo"
+            onPress={onFile}
+            busy={busy === 'file'}
+            disabled={busy !== ''}
+            hint="Fatura, conta ou contracheque, em PDF ou foto. Pode mandar vários."
+          />
+          <TextInput
+            value={texto}
+            onChangeText={setTexto}
+            placeholder={'Ou escreva: almoço 32,90 hoje'}
+            placeholderTextColor={C.dimmer}
+            multiline
+            accessibilityLabel="Escreva o que aconteceu"
+            selectionColor={C.accent}
+            style={[
+              F(400),
+              {
+                minHeight: 80,
+                borderWidth: 1,
+                borderColor: C.line,
+                backgroundColor: C.surface,
+                color: C.text,
+                fontSize: 15,
+                padding: 12,
+                textAlignVertical: 'top',
+              },
+            ]}
+          />
+          <Btn
+            label="Entender o que escrevi"
+            kind="ghost"
+            onPress={onText}
+            busy={busy === 'text'}
+            disabled={!texto.trim() || busy !== ''}
+          />
+          {!db.settings.apiKey.trim() ? (
+            <Meta>Ler documento precisa da chave em Ajustes. O teclado da tela funciona sem ela.</Meta>
+          ) : null}
+          {err ? <Text style={[F(600), { fontSize: 14, color: C.accentInk, lineHeight: 20 }]}>{err}</Text> : null}
+        </View>
+      </Modal>
+
+      {/* conferência em tela cheia */}
+      <Modal visible={preview.length > 0} animationType="slide" onRequestClose={() => setPreview([])}>
+        <Conferir
+          items={preview}
+          aviso={aviso}
+          titulo={`Lido em ${monthLabel(monthOf(preview[0]?.date ?? todayISO())).toLowerCase()}`}
+          onValor={(id, v) => {
+            const x = Number(v.replace(/\./g, '').replace(',', '.'));
+            setPreview((p) => p.map((t) => (t.id === id ? { ...t, amount: Number.isFinite(x) ? x : 0 } : t)));
+          }}
+          onRemover={(id) => setPreview((p) => p.filter((t) => t.id !== id))}
+          onDiferenca={() => {
+            if (aviso?.diff) setPreview((p) => [...p, diffTx(aviso.diff!, aviso.dueDate)]);
+            setAviso(null);
+          }}
+          onSalvar={() => {
+            addTx(preview.filter((t) => t.amount > 0));
+            setPreview([]);
+            setAviso(null);
+          }}
+          onCancelar={() => {
+            setPreview([]);
+            setAviso(null);
+          }}
+        />
+      </Modal>
+    </View>
   );
 }

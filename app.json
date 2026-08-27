@@ -23,6 +23,9 @@
       "bundler": "metro",
       "output": "single"
     },
-    "backgroundColor": "#0C0F14"
+    "backgroundColor": "#0C0F14",
+    "plugins": [
+      "expo-font"
+    ]
   }
 }

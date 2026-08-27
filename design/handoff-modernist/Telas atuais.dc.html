@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics><meta name="design_doc_mode" content="canvas"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap"><style>body{margin:0;background:#e8e6e1}*{box-sizing:border-box}a{color:#ec3013}a:hover{color:#b8250e}</style></helmet>
+
+<div style="padding:48px 56px 64px;font-family:Archivo,system-ui,sans-serif;background:#e8e6e1;min-height:100vh">
+  <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px">
+    <div style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#ec3013">Recriação · devleonardorabelo/minhascontas @ main</div>
+    <div style="font-size:26px;font-weight:700;color:#201e1d">Minhas Contas — telas atuais</div>
+    <div style="font-size:14px;line-height:1.5;color:#4a4744;max-width:640px">As cinco telas do app como estão hoje, no tema escuro (padrão do <code>useColorScheme</code>), com os tokens de <code>src/ui.tsx</code>: cartão #141922, linha #2A3342, verde #3FD68C, acento #8B9BFF, raio 16, ritmo 4/8, alvo de toque 48.</div>
+  </div>
+  <div style="height:2px;background:#201e1d;margin:24px 0 32px"></div>
+
+  <div style="display:flex;gap:32px;align-items:flex-start;flex-wrap:wrap">
+
+    <!-- ============ COMEÇAR ============ -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:8px"><span style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:#201e1d;color:#fff">01</span><span style="font-size:13px;font-weight:600;color:#201e1d">Começar</span><span style="font-size:12px;color:#6b6763">src/screens/Comecar.tsx</span></div>
+      <div style="width:390px;height:844px;background:#0C0F14;overflow:hidden;display:flex;flex-direction:column;border:1px solid #2A3342">
+        <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;justify-content:center;gap:12px;padding:16px">
+          <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px">
+            <div style="color:#E8EDF5;font-size:28px;font-weight:800;line-height:34px">Vamos começar pelo básico</div>
+            <div style="color:#98A3B6;font-size:16px;line-height:23px">Três perguntas e eu já consigo te dizer quanto dá para gastar. Nada sai deste aparelho.</div>
+          </div>
+
+          <div style="background:#141922;border:0.5px solid #2A3342;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px">
+            <div style="color:#E8EDF5;font-size:13px;font-weight:700">Quanto entra por mês</div>
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div style="color:#98A3B6;font-size:14px;font-weight:600">Salário ou renda fixa</div>
+              <div style="min-height:48px;border-radius:12px;border:0.5px solid #2A3342;background:#1B2230;color:#98A3B6;font-size:17px;font-variant-numeric:tabular-nums;padding:12px 16px;display:flex;align-items:center">0,00</div>
+              <div style="color:#98A3B6;font-size:14px;line-height:20px">Se varia, coloque o que costuma ser o mínimo.</div>
+            </div>
+          </div>
+
+          <div style="background:#141922;border:0.5px solid #2A3342;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px">
+            <div style="color:#E8EDF5;font-size:13px;font-weight:700">Que dia cai</div>
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div style="color:#98A3B6;font-size:14px;font-weight:600">Dia do mês</div>
+              <div style="min-height:48px;border-radius:12px;border:0.5px solid #2A3342;background:#1B2230;color:#98A3B6;font-size:17px;font-variant-numeric:tabular-nums;padding:12px 16px;display:flex;align-items:center">5</div>
+              <div style="color:#98A3B6;font-size:14px;line-height:20px">É por aqui que eu conto quantos dias faltam para o próximo pagamento.</div>
+            </div>
+          </div>
+
+          <div style="background:#141922;border:0.5px solid #2A3342;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px">
+            <div style="color:#E8EDF5;font-size:13px;font-weight:700">A maior conta fixa</div>
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div style="color:#98A3B6;font-size:14px;font-weight:600">Aluguel ou prestação</div>
+              <div style="min-height:48px;border-radius:12px;border:0.5px solid #2A3342;background:#1B2230;color:#98A3B6;font-size:17px;font-variant-numeric:tabular-nums;padding:12px 16px;display:flex;align-items:center">0,00</div>
+              <div style="color:#98A3B6;font-size:14px;line-height:20px">Depois você acrescenta luz, água e o resto.</div>
+            </div>
+          </div>
+
+          <div style="min-height:48px;border-radius:12px;background:#1B2230;border:0.5px solid #2A3342;display:flex;align-items:center;justify-content:center;color:#98A3B6;font-size:16px;font-weight:700">Pronto</div>
+          <div style="min-height:48px;border-radius:12px;background:#1B2230;border:0.5px solid #2A3342;display:flex;align-items:center;justify-content:center;color:#E8EDF5;font-size:16px;font-weight:700">Pular por enquanto</div>
+          <div style="color:#98A3B6;font-size:14px;line-height:19px;font-variant-numeric:tabular-nums">Dá para mudar tudo isso depois em Ajustes.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ RESUMO ============ -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:8px"><span style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:#201e1d;color:#fff">02</span><span style="font-size:13px;font-weight:600;color:#201e1d">Resumo</span><span style="font-size:12px;color:#6b6763">src/screens/Resumo.tsx</span></div>
+      <div style="width:390px;height:844px;background:#0C0F14;overflow:hidden;display:flex;flex-direction:column;border:1px solid #2A3342">
+        <div style="flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:12px">
+
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="color:#98A3B6;font-size:26px;padding:0 8px">‹</div>
+            <div style="color:#E8EDF5;font-size:17px;font-weight:700">Agosto de 2026</div>
+            <div style="color:#98A3B6;font-size:26px;padding:0 8px">›</div>
+          </div>
+
+          <div style="background:#141922;border:0.5px solid #2A3342;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px">
+            <div style="color:#E8EDF5;font-size:13px;font-weight:700">Faltam 9 dias para o salário</div>
+            <div style="color:#98A3B6;font-size:15px">Dá para gastar</div>
+            <div style="color:#3FD68C;font-size:38px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1">R$&nbsp;892,40</div>
+            <div style="color:#E8EDF5;font-size:15px;line-height:22px">Já contando R$ 640,00 que ainda vai sair.</div>
+            <div style="color:#98A3B6;font-size:14px;line-height:19px;font-variant-numeric:tabular-nums">Já tirei R$ 300,00 que você quer guardar.</div>
+          </div>
+
+          <div style="background:#141922;border:0.5px solid #2A3342;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px">
+            <div style="color:#E8EDF5;font-size:13px;font-weight:700">Posso gastar?</div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px">
+              <div style="min-height:48px;border-radius:12px;border:0.5px solid #8B9BFF;background:#8B9BFF;padding:8px 16px;display:flex;flex-direction:column;justify-content:center;gap:2px"><div style="color:#0C0F14;font-size:15px;font-weight:600">Mercado</div><div style="color:#0C0F14;font-size:13px;font-variant-numeric:tabular-nums">~180</div></div>
+              <div style="min-height:48px;border-radius:12px;border:0.5px solid #2A3342;background:#1B2230;padding:8px 16px;display:flex;flex-direction:column;justify-content:center;gap:2px"><div style="color:#E8EDF5;font-size:15px;font-weight:600">Alimentação</div><div style="color:#98A3B6;font-size:13px;font-variant-numeric:tabular-nums">~35</div></div>
+              <div style="min-height:48px;border-radius:12px;border:0.5px solid #2A3342;background:#1B2230;padding:8px 16px;display:flex;flex-direction:column;justify-content:center;gap:2px"><div style="color:#E8EDF5;font-size:15px;font-weight:600">Transporte</div><div style="color:#98A3B6;font-size:13px;font-variant-numeric:tabular-nums">~22</div></div>
+              <div style="min-height:48px;border-radius:12px;border:0.5px solid #2A3342;background:#1B2230;padding:8px 16px;display:flex;align-items:center"><div style="color:#E8EDF5;font-size:15px;font-weight:600">Outro valor</div></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div style="color:#3FD68C;font-size:22px;font-weight:800">Pode.</div>
+              <div style="color:#E8EDF5;font-size:15px;line-height:22px;font-variant-numeric:tabular-nums">Sobram R$ 712,40. Do jeito que você vem gastando, ainda faltam R$ 468,00 até o fim do mês.</div>
+            </div>
+          </div>
+
+          <div style="background:#141922;border:1px solid #F5C451;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+              <div style="color:#E8EDF5;font-size:13px;font-weight:700">A fatura do cartão</div>
+              <div style="color:#E8EDF5;font-size:17px;font-weight:700;font-variant-numeric:tabular-nums">R$ 1.284,30</div>
+            </div>
+            <div style="color:#98A3B6;font-size:14px;line-height:19px;font-variant-numeric:tabular-nums">vence amanhã · 23 compras</div>
+            <div style="color:#F5C451;font-size:15px;font-weight:600;line-height:21px">R$ 48,70 disso foi só juros. Esse dinheiro não virou nada.</div>
+            <div style="color:#E8EDF5;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Faltam 9x de <span style="font-variant-numeric:tabular-nums">R$ 189,90</span> · Notebook</div>
+            <div style="color:#E8EDF5;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Faltam 4x de <span style="font-variant-numeric:tabular-nums">R$ 74,50</span> · Dentista</div>
+          </div>
+
+          <div style="background:#141922;border:0.5px solid #2A3342;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+              <div style="color:#E8EDF5;font-size:13px;font-weight:700">Ainda vai sair</div>
+              <div style="color:#F5C451;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums">R$ 640,00</div>
+            </div>
+            <div style="display:flex;justify-content:space-between;gap:12px"><div style="color:#E8EDF5;font-size:15px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Luz</div><div style="color:#98A3B6;font-size:14px;line-height:19px;font-variant-numeric:tabular-nums">amanhã</div><div style="color:#E8EDF5;font-size:15px;font-variant-numeric:tabular-nums">R$ 128,90</div></div>
+            <div style="display:flex;justify-content:space-between;gap:12px"><div style="color:#E8EDF5;font-size:15px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Internet</div><div style="color:#98A3B6;font-size:14px;line-height:19px;font-variant-numeric:tabular-nums">segunda</div><div style="color:#E8EDF5;font-size:15px;font-variant-numeric:tabular-nums">R$ 99,90</div></div>
+            <div style="display:flex;justify-content:space-between;gap:12px"><div style="color:#E8EDF5;font-size:15px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Academia</div><div style="color:#98A3B6;font-size:14px;line-height:19px;font-variant-numeric:tabular-nums">30/08</div><div style="color:#E8EDF5;font-size:15px;font-variant-numeric:tabular-nums">R$ 89,90</div></div>
+            <div style="display:flex;justify-content:space-between;gap:12px"><div style="color:#E8EDF5;font-size:15px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Farmácia</div><div style="color:#98A3B6;font-size:14px;line-height:19px;font-variant-numeric:tabular-nums">31/08</div><div style="color:#E8EDF5;font-size:15px;font-variant-numeric:tabular-nums">R$ 321,30</div></div>
+          </div>
+
+          <div style="background:#141922;border:0.5px solid #2A3342;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px">
+            <div style="color:#E8EDF5;font-size:13px;font-weight:700">Onde foi o dinheiro</div>
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div style="display:flex;justify-content:space-between"><span style="color:#E8EDF5;font-size:15px">Moradia</span><span style="color:#E8EDF5;font-size:15px;font-variant-numeric:tabular-nums">R$ 1.450,00</span></div>
+              <div style="height:8px;border-radius:4px;background:#1B2230;overflow:hidden"><div style="width:100%;height:100%;border-radius:4px;background:#8B9BFF"></div></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div style="display:flex;justify-content:space-between"><span style="color:#E8EDF5;font-size:15px">Mercado</span><span style="color:#E8EDF5;font-size:15px;font-variant-numeric:tabular-nums">R$ 682,40</span></div>
+              <div style="height:8px;border-radius:4px;background:#1B2230;overflow:hidden"><div style="width:47%;height:100%;border-radius:4px;background:#8B9BFF"></div></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div style="display:flex;justify-content:space-between"><span style="color:#E8EDF5;font-size:15px">Alimentação</span><span style="color:#E8EDF5;font-size:15px;font-variant-numeric:tabular-nums">R$ 313,70</span></div>
+              <div style="height:8px;border-radius:4px;background:#1B2230;overflow:hidden"><div style="width:22%;height:100%;border-radius:4px;background:#8B9BFF"></div></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div style="display:flex;justify-content:space-between"><span style="color:#E8EDF5;font-size:15px">Transporte</span><span style="color:#E8EDF5;font-size:15px;font-variant-numeric:tabular-nums">R$ 186,00</span></div>
+              <div style="height:8px;border-radius:4px;background:#1B2230;overflow:hidden"><div style="width:13%;height:100%;border-radius:4px;background:#8B9BFF"></div></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div style="display:flex;justify-content:space-between"><span style="color:#E8EDF5;font-size:15px">Saúde</span><span style="color:#E8EDF5;font-size:15px;font-variant-numeric:tabular-nums">R$ 74,50</span></div>
+              <div style="height:8px;border-radius:4px;background:#1B2230;overflow:hidden"><div style="width:5%;height:100%;border-radius:4px;background:#8B9BFF"></div></div>
+            </div>
+          </div>
+
+          <div style="background:#141922;border:0.5px solid #2A3342;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px">
+            <div style="color:#E8EDF5;font-size:13px;font-weight:700">Os próximos meses</div>
+            <div style="display:flex;flex-direction:column;gap:2px">
+              <div style="color:#E8EDF5;font-size:15px;font-weight:600">Setembro de 2026</div>
+              <div style="color:#E8EDF5;font-size:17px;font-weight:700;font-variant-numeric:tabular-nums">R$ 284,20 a R$ 1.410,20</div>
+              <div style="color:#98A3B6;font-size:14px;line-height:19px;font-variant-numeric:tabular-nums">R$ 1.789,80 de contas já marcadas</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:2px">
+              <div style="color:#E8EDF5;font-size:15px;font-weight:600">Outubro de 2026</div>
+              <div style="color:#FF8A90;font-size:17px;font-weight:700;font-variant-numeric:tabular-nums">-R$ 12,40 a R$ 1.113,60</div>
+              <div style="color:#98A3B6;font-size:14px;line-height:19px;font-variant-numeric:tabular-nums">R$ 2.086,40 de contas já marcadas</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:2px">
+              <div style="color:#E8EDF5;font-size:15px;font-weight:600">Novembro de 2026</div>
+              <div style="color:#E8EDF5;font-size:17px;font-weight:700;font-variant-numeric:tabular-nums">R$ 421,10 a R$ 1.547,10</div>
+              <div style="color:#98A3B6;font-size:14px;line-height:19px;font-variant-numeric:tabular-nums">R$ 1.652,90 de contas já marcadas</div>
+            </div>
+            <div style="color:#98A3B6;font-size:14px;line-height:20px">O primeiro número já desconta o quanto você costuma gastar fora das contas fixas. O segundo é se você não gastar mais nada.</div>
+          </div>
+        </div>
+
+        <div style="display:flex;border-top:0.5px solid #2A3342;padding-top:8px">
+          <div style="flex:1;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><div style="font-size:14px;font-weight:700;color:#E8EDF5">Resumo</div><div style="width:20px;height:3px;border-radius:2px;background:#3FD68C"></div></div>
+          <div style="flex:1;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><div style="font-size:14px;font-weight:600;color:#98A3B6">Anotar</div><div style="width:20px;height:3px;border-radius:2px;background:transparent"></div></div>
+          <div style="flex:1;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><div style="font-size:14px;font-weight:600;color:#98A3B6">Extrato</div><div style="width:20px;height:3px;border-radius:2px;background:transparent"></div></div>
+          <div style="flex:1;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><div style="font-size:14px;font-weight:600;color:#98A3B6">Ajustes</div><div style="width:20px;height:3px;border-radius:2px;background:transparent"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ ANOTAR ============ -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:8px"><span style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:#201e1d;color:#fff">03</span><span style="font-size:13px;font-weight:600;color:#201e1d">Anotar</span><span style="font-size:12px;color:#6b6763">src/screens/Adicionar.tsx</span></div>
+      <div style="width:390px;height:844px;background:#0C0F14;overflow:hidden;display:flex;flex-direction:column;border:1px solid #2A3342">
+        <div style="flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:12px">
+
+          <div style="background:#141922;border:0.5px solid #2A3342;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;gap:8px">
+              <div style="flex:1;min-height:48px;border-radius:12px;border:0.5px solid #8B9BFF;background:#8B9BFF;padding:8px 16px;display:flex;align-items:center;justify-content:center"><div style="color:#0C0F14;font-size:15px;font-weight:600">Saiu</div></div>
+              <div style="flex:1;min-height:48px;border-radius:12px;border:0.5px solid #2A3342;background:#1B2230;padding:8px 16px;display:flex;align-items:center;justify-content:center"><div style="color:#E8EDF5;font-size:15px;font-weight:600">Entrou</div></div>
+            </div>
+            <div style="min-height:72px;border-radius:12px;border:0.5px solid #2A3342;background:#1B2230;color:#E8EDF5;font-size:34px;font-weight:700;text-align:center;font-variant-numeric:tabular-nums;padding:12px 16px;display:flex;align-items:center;justify-content:center">32,90</div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px">
+              <div style="min-height:48px;border-radius:12px;border:0.5px solid #2A3342;background:#1B2230;padding:8px 16px;display:flex;align-items:center"><div style="color:#E8EDF5;font-size:15px;font-weight:600">Mercado</div></div>
+              <div style="min-height:48px;border-radius:12px;border:0.5px solid #8B9BFF;background:#8B9BFF;padding:8px 16px;display:flex;align-items:center"><div style="color:#0C0F14;font-size:15px;font-weight:600">Alimentação</div></div>
+              <div style="min-height:48px;border-radius:12px;border:0.5px solid #2A3342;background:#1B2230;padding:8px 16px;display:flex;align-items:center"><div style="color:#E8EDF5;font-size:15px;font-weight:600">Transporte</div></div>
+              <div style="min-height:48px;border-radius:12px;border:0.5px solid #2A3342;background:#1B2230;padding:8px 16px;display:flex;align-items:center"><div style="color:#E8EDF5;font-size:15px;font-weight:600">Moradia</div></div>
+              <div style="min-height:48px;border-radius:12px;border:0.5px solid #2A3342;background:#1B2230;padding:8px 16px;display:flex;align-items:center"><div style="color:#E8EDF5;font-size:15px;font-weight:600">Saúde</div></div>
+              <div style="min-height:48px;border-radius:12px;border:0.5px solid #2A3342;background:#1B2230;padding:8px 16px;display:flex;align-items:center"><div style="color:#E8EDF5;font-size:15px;font-weight:600">Outros</div></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div style="color:#98A3B6;font-size:14px;font-weight:600">O que foi (opcional)</div>
+              <div style="min-height:48px;border-radius:12px;border:0.5px solid #2A3342;background:#1B2230;color:#98A3B6;font-size:17px;font-variant-numeric:tabular-nums;padding:12px 16px;display:flex;align-items:center">Alimentação</div>
+            </div>
+            <div style="min-height:48px;border-radius:12px;background:#3FD68C;display:flex;align-items:center;justify-content:center;color:#0C0F14;font-size:16px;font-weight:700">Anotar gasto</div>
+            <div style="color:#98A3B6;font-size:14px;line-height:19px;font-variant-numeric:tabular-nums">Anotado com a data de hoje. Fica só neste aparelho.</div>
+          </div>
+
+          <div style="background:#141922;border:0.5px solid #2A3342;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px">
+            <div style="color:#E8EDF5;font-size:13px;font-weight:700">Atalhos</div>
+            <div style="min-height:48px;border-radius:12px;background:#1B2230;border:0.5px solid #2A3342;display:flex;align-items:center;justify-content:center;color:#E8EDF5;font-size:16px;font-weight:700">Mandar fatura ou conta</div>
+            <div style="min-height:44px;display:flex;align-items:center;color:#8B9BFF;font-size:15px;font-weight:600">Escrever em vez de digitar o valor</div>
+          </div>
+
+          <div style="background:#141922;border:0.5px solid #2A3342;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+              <div style="color:#E8EDF5;font-size:13px;font-weight:700">Confira 3 lançamentos</div>
+              <div style="color:#FF8A90;font-size:16px;font-weight:700;font-variant-numeric:tabular-nums">-R$ 1.284,30</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="flex:1;min-width:0"><div style="color:#E8EDF5;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Notebook</div><div style="color:#98A3B6;font-size:14px;line-height:19px;font-variant-numeric:tabular-nums">14/08 · Compras · 3/12 · vence 28/08</div></div>
+              <div style="width:104px;min-height:44px;border-radius:12px;border:0.5px solid #2A3342;background:#1B2230;color:#E8EDF5;font-size:15px;text-align:right;font-variant-numeric:tabular-nums;padding:8px;display:flex;align-items:center;justify-content:flex-end">189,90</div>
+              <div style="width:32px;height:44px;display:flex;align-items:center;justify-content:center;color:#98A3B6;font-size:22px">×</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="flex:1;min-width:0"><div style="color:#E8EDF5;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Supermercado Dia</div><div style="color:#98A3B6;font-size:14px;line-height:19px;font-variant-numeric:tabular-nums">16/08 · Mercado · vence 28/08</div></div>
+              <div style="width:104px;min-height:44px;border-radius:12px;border:0.5px solid #2A3342;background:#1B2230;color:#E8EDF5;font-size:15px;text-align:right;font-variant-numeric:tabular-nums;padding:8px;display:flex;align-items:center;justify-content:flex-end">312,45</div>
+              <div style="width:32px;height:44px;display:flex;align-items:center;justify-content:center;color:#98A3B6;font-size:22px">×</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="flex:1;min-width:0"><div style="color:#E8EDF5;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Juros de rotativo</div><div style="color:#98A3B6;font-size:14px;line-height:19px;font-variant-numeric:tabular-nums">28/08 · Serviços · vence 28/08</div></div>
+              <div style="width:104px;min-height:44px;border-radius:12px;border:0.5px solid #2A3342;background:#1B2230;color:#E8EDF5;font-size:15px;text-align:right;font-variant-numeric:tabular-nums;padding:8px;display:flex;align-items:center;justify-content:flex-end">48,70</div>
+              <div style="width:32px;height:44px;display:flex;align-items:center;justify-content:center;color:#98A3B6;font-size:22px">×</div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <div style="flex:1;min-height:48px;border-radius:12px;background:#3FD68C;display:flex;align-items:center;justify-content:center;color:#0C0F14;font-size:16px;font-weight:700">Salvar</div>
+              <div style="min-height:48px;border-radius:12px;background:#1B2230;border:0.5px solid #2A3342;padding:0 16px;display:flex;align-items:center;justify-content:center;color:#E8EDF5;font-size:16px;font-weight:700">Jogar fora</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;border-top:0.5px solid #2A3342;padding-top:8px">
+          <div style="flex:1;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><div style="font-size:14px;font-weight:600;color:#98A3B6">Resumo</div><div style="width:20px;height:3px;border-radius:2px;background:transparent"></div></div>
+          <div style="flex:1;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><div style="font-size:14px;font-weight:700;color:#E8EDF5">Anotar</div><div style="width:20px;height:3px;border-radius:2px;background:#3FD68C"></div></div>
+          <div style="flex:1;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><div style="font-size:14px;font-weight:600;color:#98A3B6">Extrato</div><div style="width:20px;height:3px;border-radius:2px;background:transparent"></div></div>
+          <div style="flex:1;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><div style="font-size:14px;font-weight:600;color:#98A3B6">Ajustes</div><div style="width:20px;height:3px;border-radius:2px;background:transparent"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ EXTRATO ============ -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:8px"><span style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:#201e1d;color:#fff">04</span><span style="font-size:13px;font-weight:600;color:#201e1d">Extrato</span><span style="font-size:12px;color:#6b6763">src/screens/Extrato.tsx</span></div>
+      <div style="width:390px;height:844px;background:#0C0F14;overflow:hidden;display:flex;flex-direction:column;border:1px solid #2A3342">
+        <div style="flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="color:#98A3B6;font-size:26px;padding:0 8px">‹</div>
+            <div style="color:#E8EDF5;font-size:17px;font-weight:700">Agosto de 2026</div>
+            <div style="color:#98A3B6;font-size:26px;padding:0 8px">›</div>
+          </div>
+
+          <div style="background:#141922;border:0.5px solid #2A3342;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+              <div style="color:#E8EDF5;font-size:13px;font-weight:700">Hoje, 27/08</div>
+              <div style="color:#98A3B6;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums">−67,40</div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:center;min-height:48px">
+              <div style="flex:1;min-width:0"><div style="color:#E8EDF5;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Almoço</div><div style="color:#98A3B6;font-size:14px;line-height:19px;font-variant-numeric:tabular-nums">Alimentação · anotado</div></div>
+              <div style="color:#E8EDF5;font-size:16px;font-weight:600;font-variant-numeric:tabular-nums">−32,90</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;gap:12px;align-items:center;min-height:48px">
+                <div style="flex:1;min-width:0"><div style="color:#E8EDF5;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Uber</div><div style="color:#98A3B6;font-size:14px;line-height:19px;font-variant-numeric:tabular-nums">Transporte · anotado</div></div>
+                <div style="color:#E8EDF5;font-size:16px;font-weight:600;font-variant-numeric:tabular-nums">−34,50</div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;padding:12px;border-radius:12px;background:#1B2230">
+                <div style="display:flex;flex-direction:column;gap:4px">
+                  <div style="color:#98A3B6;font-size:14px;font-weight:600">Valor</div>
+                  <div style="min-height:48px;border-radius:12px;border:0.5px solid #2A3342;background:#1B2230;color:#E8EDF5;font-size:17px;font-variant-numeric:tabular-nums;padding:12px 16px;display:flex;align-items:center">34,50</div>
+                </div>
+                <div style="display:flex;gap:8px">
+                  <div style="flex:1;min-height:48px;border-radius:12px;background:#3FD68C;display:flex;align-items:center;justify-content:center;color:#0C0F14;font-size:16px;font-weight:700">Salvar</div>
+                  <div style="min-height:48px;border-radius:12px;border:0.5px solid #FF8A90;padding:0 16px;display:flex;align-items:center;justify-content:center;color:#FF8A90;font-size:16px;font-weight:700">Apagar</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="background:#141922;border:0.5px solid #2A3342;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+              <div style="color:#E8EDF5;font-size:13px;font-weight:700">Ontem, 26/08</div>
+              <div style="color:#98A3B6;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums">−212,80</div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:center;min-height:48px">
+              <div style="flex:1;min-width:0"><div style="color:#E8EDF5;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Supermercado Dia</div><div style="color:#98A3B6;font-size:14px;line-height:19px;font-variant-numeric:tabular-nums">Mercado · do cartão</div></div>
+              <div style="color:#E8EDF5;font-size:16px;font-weight:600;font-variant-numeric:tabular-nums">−186,30</div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:center;min-height:48px">
+              <div style="flex:1;min-width:0"><div style="color:#E8EDF5;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Padaria</div><div style="color:#98A3B6;font-size:14px;line-height:19px;font-variant-numeric:tabular-nums">Alimentação · anotado</div></div>
+              <div style="color:#E8EDF5;font-size:16px;font-weight:600;font-variant-numeric:tabular-nums">−26,50</div>
+            </div>
+          </div>
+
+          <div style="background:#141922;border:0.5px solid #2A3342;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+              <div style="color:#E8EDF5;font-size:13px;font-weight:700">Terça, 25/08</div>
+              <div style="color:#98A3B6;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums">−264,40</div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:center;min-height:48px;opacity:0.6">
+              <div style="flex:1;min-width:0"><div style="color:#E8EDF5;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Notebook</div><div style="color:#98A3B6;font-size:14px;line-height:19px;font-variant-numeric:tabular-nums">Compras · 3/12 · previsto</div></div>
+              <div style="color:#E8EDF5;font-size:16px;font-weight:600;font-variant-numeric:tabular-nums">−189,90</div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:center;min-height:48px">
+              <div style="flex:1;min-width:0"><div style="color:#E8EDF5;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Dentista</div><div style="color:#98A3B6;font-size:14px;line-height:19px;font-variant-numeric:tabular-nums">Saúde · 8/12 · do cartão</div></div>
+              <div style="color:#E8EDF5;font-size:16px;font-weight:600;font-variant-numeric:tabular-nums">−74,50</div>
+            </div>
+          </div>
+
+          <div style="background:#141922;border:0.5px solid #2A3342;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+              <div style="color:#E8EDF5;font-size:13px;font-weight:700">Quarta, 05/08</div>
+              <div style="color:#3FD68C;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums">+2.750,00</div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:center;min-height:48px">
+              <div style="flex:1;min-width:0"><div style="color:#E8EDF5;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Salário</div><div style="color:#98A3B6;font-size:14px;line-height:19px;font-variant-numeric:tabular-nums">contracheque</div></div>
+              <div style="color:#3FD68C;font-size:16px;font-weight:600;font-variant-numeric:tabular-nums">+4.200,00</div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:center;min-height:48px">
+              <div style="flex:1;min-width:0"><div style="color:#E8EDF5;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Aluguel</div><div style="color:#98A3B6;font-size:14px;line-height:19px;font-variant-numeric:tabular-nums">Moradia · anotado</div></div>
+              <div style="color:#E8EDF5;font-size:16px;font-weight:600;font-variant-numeric:tabular-nums">−1.450,00</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;border-top:0.5px solid #2A3342;padding-top:8px">
+          <div style="flex:1;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><div style="font-size:14px;font-weight:600;color:#98A3B6">Resumo</div><div style="width:20px;height:3px;border-radius:2px;background:transparent"></div></div>
+          <div style="flex:1;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><div style="font-size:14px;font-weight:600;color:#98A3B6">Anotar</div><div style="width:20px;height:3px;border-radius:2px;background:transparent"></div></div>
+          <div style="flex:1;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><div style="font-size:14px;font-weight:700;color:#E8EDF5">Extrato</div><div style="width:20px;height:3px;border-radius:2px;background:#3FD68C"></div></div>
+          <div style="flex:1;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><div style="font-size:14px;font-weight:600;color:#98A3B6">Ajustes</div><div style="width:20px;height:3px;border-radius:2px;background:transparent"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ AJUSTES ============ -->
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:8px"><span style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:#201e1d;color:#fff">05</span><span style="font-size:13px;font-weight:600;color:#201e1d">Ajustes</span><span style="font-size:12px;color:#6b6763">src/screens/Ajustes.tsx</span></div>
+      <div style="width:390px;height:844px;background:#0C0F14;overflow:hidden;display:flex;flex-direction:column;border:1px solid #2A3342">
+        <div style="flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:12px">
+
+          <div style="background:#141922;border:0.5px solid #2A3342;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px">
+            <div style="color:#E8EDF5;font-size:13px;font-weight:700">Meu dinheiro</div>
+            <div style="color:#98A3B6;font-size:15px;line-height:22px">A reserva é o que você quer deixar parado. Some do "dá para gastar", então você não gasta sem querer.</div>
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div style="color:#98A3B6;font-size:14px;font-weight:600">Guardar por mês</div>
+              <div style="min-height:48px;border-radius:12px;border:0.5px solid #2A3342;background:#1B2230;color:#E8EDF5;font-size:17px;font-variant-numeric:tabular-nums;padding:12px 16px;display:flex;align-items:center">300</div>
+            </div>
+            <div style="min-height:48px;border-radius:12px;background:#3FD68C;display:flex;align-items:center;justify-content:center;color:#0C0F14;font-size:16px;font-weight:700">Salvar</div>
+            <div style="color:#98A3B6;font-size:14px;line-height:19px;font-variant-numeric:tabular-nums">Seu salário cai todo dia 5. Eu descubro isso sozinho pela sua entrada mensal.</div>
+          </div>
+
+          <div style="background:#141922;border:0.5px solid #2A3342;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px">
+            <div style="color:#E8EDF5;font-size:13px;font-weight:700">Seus dados</div>
+            <div style="color:#98A3B6;font-size:15px;line-height:22px">128 coisas anotadas · reserva de R$ 300,00. Fica tudo neste aparelho: não tem conta, não tem nuvem, e desinstalar apaga.</div>
+            <div style="min-height:48px;border-radius:12px;border:0.5px solid #FF8A90;display:flex;align-items:center;justify-content:center;color:#FF8A90;font-size:16px;font-weight:700">Apagar tudo</div>
+          </div>
+
+          <div style="background:#141922;border:0.5px solid #2A3342;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+              <div style="color:#E8EDF5;font-size:13px;font-weight:700">Avançado</div>
+              <div style="color:#8B9BFF;font-size:15px;font-weight:600">Fechar</div>
+            </div>
+            <div style="color:#98A3B6;font-size:15px;line-height:22px">Ler fatura, conta e contracheque automaticamente precisa de uma chave da Anthropic. Já está configurada.</div>
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div style="color:#98A3B6;font-size:14px;font-weight:600">Chave da Anthropic</div>
+              <div style="min-height:48px;border-radius:12px;border:0.5px solid #2A3342;background:#1B2230;color:#E8EDF5;font-size:17px;padding:12px 16px;display:flex;align-items:center;letter-spacing:.1em">••••••••••••••••</div>
+              <div style="color:#98A3B6;font-size:14px;line-height:20px">Fica guardada só neste aparelho. Quem tiver o aparelho tem a chave. Você paga direto à Anthropic, só o que usar.</div>
+            </div>
+            <div style="min-height:48px;border-radius:12px;background:#3FD68C;display:flex;align-items:center;justify-content:center;color:#0C0F14;font-size:16px;font-weight:700">Salvar chave</div>
+            <div style="min-height:48px;border-radius:12px;background:#1B2230;border:0.5px solid #2A3342;display:flex;align-items:center;justify-content:center;color:#E8EDF5;font-size:16px;font-weight:700">Onde pegar uma chave</div>
+          </div>
+        </div>
+
+        <div style="display:flex;border-top:0.5px solid #2A3342;padding-top:8px">
+          <div style="flex:1;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><div style="font-size:14px;font-weight:600;color:#98A3B6">Resumo</div><div style="width:20px;height:3px;border-radius:2px;background:transparent"></div></div>
+          <div style="flex:1;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><div style="font-size:14px;font-weight:600;color:#98A3B6">Anotar</div><div style="width:20px;height:3px;border-radius:2px;background:transparent"></div></div>
+          <div style="flex:1;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><div style="font-size:14px;font-weight:600;color:#98A3B6">Extrato</div><div style="width:20px;height:3px;border-radius:2px;background:transparent"></div></div>
+          <div style="flex:1;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><div style="font-size:14px;font-weight:700;color:#E8EDF5">Ajustes</div><div style="width:20px;height:3px;border-radius:2px;background:#3FD68C"></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

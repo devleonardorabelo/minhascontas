@@ -7,12 +7,17 @@ import {
   Pressable,
   StyleSheet,
   Text,
-  useColorScheme,
   View,
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import {
+  useFonts,
+  Archivo_400Regular,
+  Archivo_600SemiBold,
+  Archivo_800ExtraBold,
+} from '@expo-google-fonts/archivo';
 import { load, useDB, useReady } from './src/store';
-import { SP, TAP, useC } from './src/ui';
+import { F, TAP, useC } from './src/ui';
 import Resumo from './src/screens/Resumo';
 import Adicionar from './src/screens/Adicionar';
 import Extrato from './src/screens/Extrato';
@@ -28,21 +33,27 @@ const TABS = [
 
 export default function App() {
   const C = useC();
-  const esquema = useColorScheme();
-  const ready = useReady();
+  const dados = useReady();
   const db = useDB();
   const [tab, setTab] = useState<(typeof TABS)[number]['key']>('resumo');
+  const [fontes] = useFonts({
+    Archivo_400Regular,
+    Archivo_600SemiBold,
+    Archivo_800ExtraBold,
+  });
 
   useEffect(() => {
     load();
   }, []);
 
+  // Um gate só: sem fonte carregada o texto salta de família na primeira pintura.
+  const ready = dados && fontes;
   const primeiraVez = ready && !db.settings.onboarded && db.tx.length === 0;
   const Active = TABS.find((t) => t.key === tab)!.Screen;
 
   return (
     <SafeAreaProvider>
-      <StatusBar style={esquema === 'light' ? 'dark' : 'light'} />
+      <StatusBar style="dark" />
       <SafeAreaView style={[s.root, { backgroundColor: C.bg }]} edges={['top', 'bottom']}>
         <KeyboardAvoidingView
           style={s.frame}
@@ -58,8 +69,8 @@ export default function App() {
           </View>
 
           {ready && !primeiraVez ? (
-            <View style={[s.tabs, { borderTopColor: C.line }]}>
-              {TABS.map((t) => {
+            <View style={[s.tabs, { borderTopColor: C.rule }]}>
+              {TABS.map((t, i) => {
                 const ativa = tab === t.key;
                 return (
                   <Pressable
@@ -68,20 +79,23 @@ export default function App() {
                     accessibilityRole="tab"
                     accessibilityLabel={t.label}
                     accessibilityState={{ selected: ativa }}
-                    style={({ pressed }) => [s.tab, pressed && { opacity: 0.6 }]}>
+                    style={({ pressed }) => [
+                      s.tab,
+                      i > 0 ? { borderLeftWidth: 1, borderLeftColor: C.lineSoft } : null,
+                      ativa
+                        ? { backgroundColor: C.accentSurface }
+                        : pressed
+                          ? { backgroundColor: 'rgba(32,30,29,0.07)' }
+                          : null,
+                    ]}>
                     <Text
                       style={[
                         s.tabText,
-                        { color: ativa ? C.text : C.dim, fontWeight: ativa ? '700' : '600' },
+                        F(ativa ? 800 : 600),
+                        { color: ativa ? C.onAccent : C.dim },
                       ]}>
                       {t.label}
                     </Text>
-                    <View
-                      style={[
-                        s.dot,
-                        { backgroundColor: ativa ? C.good : 'transparent' },
-                      ]}
-                    />
                   </Pressable>
                 );
               })}
@@ -96,18 +110,7 @@ export default function App() {
 const s = StyleSheet.create({
   root: { flex: 1 },
   frame: { flex: 1, width: '100%', maxWidth: 640, alignSelf: 'center' },
-  tabs: {
-    flexDirection: 'row',
-    borderTopWidth: StyleSheet.hairlineWidth,
-    paddingTop: SP.sm,
-  },
-  tab: {
-    flex: 1,
-    minHeight: TAP,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: SP.xs,
-  },
-  tabText: { fontSize: 14 },
-  dot: { width: 20, height: 3, borderRadius: 2 },
+  tabs: { flexDirection: 'row', borderTopWidth: 2 },
+  tab: { flex: 1, height: TAP, alignItems: 'center', justifyContent: 'center' },
+  tabText: { fontSize: 13, letterSpacing: 0.52, textTransform: 'uppercase' },
 });
