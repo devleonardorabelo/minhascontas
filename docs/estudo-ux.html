@@ -1,0 +1,996 @@
+<title>Sandra não abre o app</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@400;500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+:root {
+  --paper:      #FCFCFA;
+  --surface:    #FFFFFF;
+  --sunk:       #F3F4F1;
+  --ink:        #14181C;
+  --muted:      #59636F;
+  --rule:       #DFE1DC;
+  --pen:        #20348C;
+  --pen-soft:   #E7EAF6;
+  --red:        #B3261E;
+  --red-soft:   #FAEAE8;
+  --green:      #1B6B49;
+  --green-soft: #E6F2EC;
+
+  /* superfícies de mockup: sempre escuras, é a tela do app */
+  --app-bg:   #0C0F14;
+  --app-card: #141922;
+  --app-line: #232B39;
+  --app-text: #E8EDF5;
+  --app-dim:  #8A94A8;
+  --app-faint:#5A6478;
+  --app-good: #3FD68C;
+  --app-warn: #F5C451;
+  --app-bad:  #FF6B72;
+  --app-accent:#7C8CFF;
+
+  --measure: 68ch;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper:      #101317;
+    --surface:    #171B21;
+    --sunk:       #1C2128;
+    --ink:        #E9EDF2;
+    --muted:      #98A2B0;
+    --rule:       #2A3038;
+    --pen:        #93A6FF;
+    --pen-soft:   #1B2135;
+    --red:        #FF8F86;
+    --red-soft:   #2B1A19;
+    --green:      #5FD3A0;
+    --green-soft: #14241D;
+  }
+}
+:root[data-theme="dark"] {
+  --paper:      #101317;
+  --surface:    #171B21;
+  --sunk:       #1C2128;
+  --ink:        #E9EDF2;
+  --muted:      #98A2B0;
+  --rule:       #2A3038;
+  --pen:        #93A6FF;
+  --pen-soft:   #1B2135;
+  --red:        #FF8F86;
+  --red-soft:   #2B1A19;
+  --green:      #5FD3A0;
+  --green-soft: #14241D;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Source Sans 3", ui-sans-serif, system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.62;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+  max-width: 78ch;
+  margin: 0 auto;
+  padding: 0 24px 96px;
+}
+
+/* ---------- cabeçalho ---------- */
+
+header {
+  padding: 72px 0 40px;
+  border-bottom: 2px solid var(--ink);
+  margin-bottom: 48px;
+}
+.eyebrow {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--pen);
+  margin: 0 0 20px;
+}
+h1 {
+  font-family: "Zilla Slab", Georgia, serif;
+  font-size: clamp(38px, 8vw, 62px);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  margin: 0 0 22px;
+  text-wrap: balance;
+}
+.deck {
+  font-size: 20px;
+  line-height: 1.5;
+  color: var(--muted);
+  max-width: var(--measure);
+  margin: 0 0 28px;
+}
+.meta {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 12.5px;
+  color: var(--muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+  margin: 0;
+}
+
+/* ---------- estrutura ---------- */
+
+section { margin: 0 0 64px; }
+
+h2 {
+  font-family: "Zilla Slab", Georgia, serif;
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  margin: 0 0 8px;
+  text-wrap: balance;
+}
+.sub {
+  color: var(--muted);
+  font-size: 16px;
+  margin: 0 0 32px;
+  max-width: var(--measure);
+}
+h3 {
+  font-family: "Zilla Slab", Georgia, serif;
+  font-size: 21px;
+  font-weight: 600;
+  margin: 40px 0 10px;
+  text-wrap: balance;
+}
+p { max-width: var(--measure); margin: 0 0 16px; }
+strong { font-weight: 700; }
+em { font-style: italic; }
+a { color: var(--pen); }
+
+/* ---------- persona ---------- */
+
+.persona {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--pen);
+  padding: 28px 30px;
+  display: grid;
+  gap: 20px;
+}
+.persona-top { display: grid; gap: 6px; }
+.persona-name {
+  font-family: "Zilla Slab", Georgia, serif;
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.15;
+  margin: 0;
+}
+.persona-role {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 13px;
+  color: var(--pen);
+  margin: 0;
+}
+.persona p { margin: 0; }
+.facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 18px;
+  padding-top: 20px;
+  border-top: 1px solid var(--rule);
+}
+.fact { display: grid; gap: 2px; }
+.fact-n {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 19px;
+  font-weight: 600;
+}
+.fact-l { font-size: 13.5px; color: var(--muted); line-height: 1.35; }
+
+.disclaimer {
+  background: var(--sunk);
+  border: 1px dashed var(--rule);
+  padding: 18px 22px;
+  font-size: 15.5px;
+  color: var(--muted);
+  margin-top: 24px;
+}
+.disclaimer strong { color: var(--ink); }
+
+.wants {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 26px;
+  margin-top: 34px;
+}
+.wants h4 {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--rule);
+}
+.wants ol, .wants ul { margin: 0; padding-left: 20px; display: grid; gap: 7px; }
+.wants li { font-size: 16px; }
+.quote { color: var(--ink); }
+
+.lex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.chip {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 12.5px;
+  padding: 4px 10px;
+  border: 1px solid var(--rule);
+  background: var(--surface);
+}
+.chip.no { color: var(--red); border-color: var(--red); background: var(--red-soft); text-decoration: line-through; }
+.chip.yes { color: var(--green); border-color: var(--green); background: var(--green-soft); }
+
+/* ---------- achados ---------- */
+
+.finding {
+  display: grid;
+  grid-template-columns: 46px 1fr;
+  gap: 20px;
+  padding: 26px 0;
+  border-top: 1px solid var(--rule);
+  align-items: start;
+}
+.finding:last-of-type { border-bottom: 1px solid var(--rule); }
+.mark {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--pen);
+  line-height: 1.5;
+}
+.finding.danger .mark { color: var(--red); }
+.finding h3 { margin: 0 0 8px; font-size: 20px; }
+.finding p { margin: 0 0 12px; font-size: 16.5px; }
+.finding p:last-child { margin-bottom: 0; }
+.tag {
+  display: inline-block;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  margin-left: 8px;
+  vertical-align: 3px;
+  background: var(--red-soft);
+  color: var(--red);
+  border: 1px solid var(--red);
+}
+
+.evidence {
+  background: var(--app-bg);
+  border: 1px solid var(--app-line);
+  padding: 16px 18px;
+  margin: 4px 0 14px;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  color: var(--app-text);
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-x: auto;
+}
+.evidence .lbl {
+  display: block;
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--app-dim);
+  margin-bottom: 8px;
+}
+.evidence .big { font-size: 26px; font-weight: 600; }
+.evidence .bad { color: var(--app-bad); }
+.evidence .warn { color: var(--app-warn); }
+.evidence .good { color: var(--app-good); }
+.evidence .dim { color: var(--app-dim); }
+.evidence .faint { color: var(--app-faint); }
+
+/* ---------- tabelas ---------- */
+
+.tablewrap { overflow-x: auto; margin: 20px 0 8px; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15.5px;
+  min-width: 460px;
+}
+th {
+  text-align: left;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 11.5px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 500;
+  padding: 0 14px 10px 0;
+  border-bottom: 1px solid var(--ink);
+}
+td {
+  padding: 11px 14px 11px 0;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+}
+td.num, th.num {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  padding-right: 0;
+}
+td.id {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-weight: 600;
+  color: var(--pen);
+  white-space: nowrap;
+}
+.fail { color: var(--red); font-weight: 600; }
+.pass { color: var(--green); font-weight: 600; }
+
+/* ---------- opções ---------- */
+
+.options { display: grid; gap: 14px; margin: 22px 0; }
+.option {
+  border: 1px solid var(--rule);
+  background: var(--surface);
+  padding: 18px 22px;
+}
+.option.pick { border-color: var(--green); background: var(--green-soft); }
+.option h4 {
+  font-family: "Zilla Slab", Georgia, serif;
+  font-size: 18px;
+  margin: 0 0 6px;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.option h4 .n {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 13px;
+  color: var(--muted);
+}
+.option.pick h4 .n { color: var(--green); }
+.option p { margin: 0; font-size: 15.5px; color: var(--muted); }
+.badge {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: var(--green);
+  color: var(--paper);
+  padding: 3px 8px;
+}
+
+/* ---------- mockups ---------- */
+
+.compare {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(288px, 1fr));
+  gap: 22px;
+  margin: 26px 0 10px;
+}
+.phone { display: grid; gap: 10px; }
+.phone-label {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 11.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.phone-label .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); }
+.phone-label.after .dot { background: var(--green); }
+.screen {
+  background: var(--app-bg);
+  border: 1px solid var(--app-line);
+  border-radius: 18px;
+  padding: 16px;
+  display: grid;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--app-text);
+}
+.mcard {
+  background: var(--app-card);
+  border: 1px solid var(--app-line);
+  border-radius: 12px;
+  padding: 14px;
+  display: grid;
+  gap: 7px;
+}
+.mlabel {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--app-dim);
+  font-weight: 700;
+}
+.mlabel.soft { text-transform: none; letter-spacing: 0; font-size: 13px; font-weight: 600; }
+.mbig {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1.1;
+}
+.mmid {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 21px;
+  font-weight: 600;
+}
+.msmall { font-size: 12.5px; color: var(--app-dim); line-height: 1.45; }
+.msmall.weak { color: var(--app-faint); }
+.mrow { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+.mbtns { display: flex; flex-wrap: wrap; gap: 7px; }
+.mbtn {
+  border: 1px solid var(--app-line);
+  background: #1B2230;
+  border-radius: 9px;
+  padding: 9px 11px;
+  font-size: 12.5px;
+  color: var(--app-text);
+}
+.mbtn.ghost { color: var(--app-dim); }
+.minput {
+  border: 1px solid var(--app-line);
+  background: #1B2230;
+  border-radius: 9px;
+  padding: 11px;
+  font-size: 13px;
+  color: var(--app-faint);
+}
+.mbad { color: var(--app-bad); }
+.mwarn { color: var(--app-warn); }
+.mgood { color: var(--app-good); }
+.mdim { color: var(--app-dim); }
+
+.callout {
+  border-left: 3px solid var(--pen);
+  background: var(--pen-soft);
+  padding: 16px 20px;
+  margin: 20px 0;
+  font-size: 16px;
+}
+.callout p { margin: 0; }
+.callout p + p { margin-top: 10px; }
+
+.wire {
+  background: var(--sunk);
+  border: 1px solid var(--rule);
+  padding: 18px 20px;
+  overflow-x: auto;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 13px;
+  line-height: 1.65;
+  white-space: pre;
+  margin: 18px 0;
+  color: var(--ink);
+}
+
+.keep { display: grid; gap: 0; margin-top: 20px; }
+.keep-item {
+  display: grid;
+  grid-template-columns: 26px 1fr;
+  gap: 12px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--rule);
+  align-items: baseline;
+}
+.keep-item:first-child { border-top: 1px solid var(--rule); }
+.keep-item .tick { color: var(--green); font-weight: 700; }
+.keep-item p { margin: 0; font-size: 16px; }
+
+.questions { counter-reset: q; display: grid; gap: 0; margin-top: 20px; }
+.q {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 14px;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--rule);
+  align-items: baseline;
+}
+.q:first-child { border-top: 1px solid var(--rule); }
+.q::before {
+  counter-increment: q;
+  content: counter(q, decimal-leading-zero);
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 13px;
+  color: var(--muted);
+}
+.q p { margin: 0; font-size: 16.5px; }
+
+footer {
+  margin-top: 72px;
+  padding-top: 26px;
+  border-top: 2px solid var(--ink);
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 12.5px;
+  color: var(--muted);
+  display: grid;
+  gap: 6px;
+}
+
+@media (max-width: 560px) {
+  body { font-size: 16px; }
+  .finding { grid-template-columns: 32px 1fr; gap: 14px; }
+  .mark { font-size: 17px; }
+  .wrap { padding: 0 18px 72px; }
+  header { padding-top: 48px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+</style>
+
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">minhascontas · estudo de UX</p>
+  <h1>Sandra não abre o app</h1>
+  <p class="deck">O motor está certo, a leitura de fatura está certa, a conta fecha
+  no centavo. Mas a primeira tela dá um soco em quem já está com medo, e a segunda
+  promete uma sobra que não existe.</p>
+  <p class="meta">
+    <span>27 de agosto de 2026</span>
+    <span>·</span>
+    <span>11 achados observados na tela</span>
+    <span>·</span>
+    <span>spec 04</span>
+  </p>
+</header>
+
+<section>
+  <h2>Quem é ela</h2>
+  <p class="sub">Uma persona precisa ser específica o bastante para discordar de
+  você. Esta discorda.</p>
+
+  <div class="persona">
+    <div class="persona-top">
+      <p class="persona-name">Sandra Nogueira, 38</p>
+      <p class="persona-role">auxiliar administrativa · Goiânia</p>
+    </div>
+    <p>Salário cai todo dia 5. O marido faz bico de eletricista, renda que muda
+    todo mês. Dois filhos, Kauã de 9 e Melissa de 15. Está no rotativo do cartão
+    há quatro meses e sabe que está — o que ela não sabe é quanto isso custa. Um
+    Android intermediário, plano de dados curto, e o WhatsApp como sistema
+    operacional da vida.</p>
+    <div class="facts">
+      <div class="fact"><span class="fact-n">R$ 2.412</span><span class="fact-l">líquido, todo dia 5</span></div>
+      <div class="fact"><span class="fact-n">R$ 950</span><span class="fact-l">aluguel</span></div>
+      <div class="fact"><span class="fact-n">R$ 1.800</span><span class="fact-l">limite do cartão</span></div>
+      <div class="fact"><span class="fact-n">4 meses</span><span class="fact-l">no rotativo</span></div>
+    </div>
+  </div>
+
+  <div class="disclaimer">
+    <strong>Isto é uma persona construída, não pesquisa de campo.</strong> Ela serve
+    para dar um ponto de vista consistente às decisões de UI. O que só gente de
+    verdade responde está no fim — e é bastante.
+  </div>
+
+  <div class="wants">
+    <div>
+      <h4>O que ela quer saber, nesta ordem</h4>
+      <ol>
+        <li class="quote">"Dá para comprar isso agora?"</li>
+        <li class="quote">"Quanto ainda posso gastar até cair o salário?"</li>
+        <li class="quote">"Por que sobrou tão pouco esse mês?"</li>
+        <li class="quote">"Quanto ainda falta pagar do tênis?"</li>
+      </ol>
+    </div>
+    <div>
+      <h4>O que ela não quer</h4>
+      <ul>
+        <li>Relatório</li>
+        <li>Gráfico de pizza</li>
+        <li>Orçamento por envelope</li>
+        <li>Meta de economia</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>As palavras dela</h3>
+  <p>A interface fala como um contador. Ela não.</p>
+  <div class="lex">
+    <span class="chip no">receita</span>
+    <span class="chip no">despesa</span>
+    <span class="chip no">competência</span>
+    <span class="chip no">comprometido</span>
+    <span class="chip no">lançamento</span>
+    <span class="chip no">reserva</span>
+    <span class="chip no">provisão</span>
+  </div>
+  <div class="lex" style="margin-top:12px">
+    <span class="chip yes">entrou</span>
+    <span class="chip yes">saiu</span>
+    <span class="chip yes">já era</span>
+    <span class="chip yes">guardado</span>
+    <span class="chip yes">a fatura</span>
+    <span class="chip yes">as contas</span>
+    <span class="chip yes">a parcela</span>
+    <span class="chip yes">o dia do pagamento</span>
+  </div>
+</section>
+
+<section>
+  <h2>O que quebra hoje</h2>
+  <p class="sub">Com os dados dela carregados no app, em 27/08/2026. Tudo abaixo foi
+  visto na tela, não deduzido.</p>
+
+  <div class="finding danger">
+    <div class="mark">A</div>
+    <div>
+      <h3>A primeira tela é um soco</h3>
+      <div class="evidence">
+        <span class="lbl">o que ela vê ao abrir</span>
+        <span class="dim">LIVRE PARA GASTAR</span><br>
+        <span class="big bad">-R$ 223,27</span><br>
+        <span class="faint">-R$ 44,65 por dia · 5 dias até o fim do mês</span>
+      </div>
+      <p>Nenhuma ação sugerida, nenhuma saída. Quem abre um app de dinheiro com medo
+      e leva isso na cara fecha o app — e fechar o app é exatamente o comportamento
+      que criou a dívida.</p>
+    </div>
+  </div>
+
+  <div class="finding">
+    <div class="mark">B</div>
+    <div>
+      <h3>"-R$ 44,65 por dia"</h3>
+      <p>Aritmeticamente correto, humanamente vazio. Ninguém gasta linearmente, e
+      não existe gastar menos que zero. O valor por dia só significa alguma coisa
+      quando é positivo e comparável a uma compra real.</p>
+    </div>
+  </div>
+
+  <div class="finding">
+    <div class="mark">C</div>
+    <div>
+      <h3>"A pagar R$ 0,00 · Nada agendado"</h3>
+      <p>Verdade contábil, mentira prática. É dia 27 e tudo já venceu — mas ela
+      ainda vai comer, pegar ônibus e comprar gás nos próximos cinco dias. O app
+      afirma, em amarelo, que nada mais vai sair.</p>
+    </div>
+  </div>
+
+  <div class="finding danger">
+    <div class="mark">D</div>
+    <div>
+      <h3>A previsão é otimista por construção <span class="tag">o mais grave</span></h3>
+      <div class="evidence">
+        <span class="lbl">as duas coisas estão na mesma tela</span>
+        <span class="dim">LIVRE PARA GASTAR</span> &nbsp; <span class="bad">-R$ 223,27</span><br>
+        <span class="dim">PRÓXIMOS MESES</span> &nbsp; setembro <span class="good">R$ 589,73</span> · outubro <span class="good">R$ 589,73</span> · novembro <span class="good">R$ 589,73</span>
+      </div>
+      <p>O mês corrente fecha no vermelho e os seis seguintes prometem quase
+      seiscentos reais sobrando, todos idênticos. A causa: a projeção só repete o
+      que está marcado como mensal. O mercado dela — <strong>R$ 581 em agosto</strong> —
+      o gás, a farmácia e o lanche acontecem todo mês e ficam de fora.</p>
+      <p>O rodapé avisa em cinza claro que a previsão não adivinha gasto novo. Mas o
+      número grande em branco diz outra coisa, e é o número que ela vai lembrar.
+      <strong>Convidar alguém endividado a planejar em cima de uma sobra que não
+      existe é o pior que este app pode fazer.</strong></p>
+    </div>
+  </div>
+
+  <div class="finding">
+    <div class="mark">E</div>
+    <div>
+      <h3>A fatura do cartão desaparece</h3>
+      <div class="evidence">
+        <span class="lbl">R$ 324,92 de fatura, distribuídos assim</span>
+        Compras <span class="dim">·</span> R$ 213,22<br>
+        Saúde <span class="dim">·</span> R$ 47,50<br>
+        <span class="warn">Impostos <span class="dim">·</span> R$ 64,20 &nbsp;← os juros do rotativo</span>
+      </div>
+      <p>Ela não pensa em categorias, pensa em <em>a fatura</em>. E o número que
+      mais precisa ser visto — o que ela paga só por estar no rotativo — está atrás
+      do rótulo onde ela nunca vai procurar.</p>
+    </div>
+  </div>
+
+  <div class="finding">
+    <div class="mark">F</div>
+    <div>
+      <h3>Datas em <code>2026-08-20</code></h3>
+      <p>Formato de banco de dados numa tela de pessoa, no extrato inteiro.</p>
+    </div>
+  </div>
+
+  <div class="finding danger">
+    <div class="mark">G</div>
+    <div>
+      <h3>Contraste reprovado</h3>
+      <p><code>#5A6478</code> é a cor de todas as datas, categorias e textos de
+      ajuda. Medido contra cada superfície do app:</p>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>sobre</th><th class="num">razão</th><th class="num">mínimo AA</th><th class="num">resultado</th></tr></thead>
+          <tbody>
+            <tr><td>card <code>#141922</code></td><td class="num">2,96:1</td><td class="num">4,5:1</td><td class="num fail">reprova</td></tr>
+            <tr><td>card2 <code>#1B2230</code></td><td class="num">2,68:1</td><td class="num">4,5:1</td><td class="num fail">reprova</td></tr>
+            <tr><td>fundo <code>#0C0F14</code></td><td class="num">3,23:1</td><td class="num">4,5:1</td><td class="num fail">reprova</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Reprova em todas. Num celular ao sol, some.</p>
+    </div>
+  </div>
+
+  <div class="finding">
+    <div class="mark">H</div>
+    <div>
+      <h3>"Posso gastar?" exige que ela já saiba o valor</h3>
+      <p>A pergunta real é "posso ir no mercado?" — e ela não sabe se vai gastar 80
+      ou 200. O campo em branco devolve a pergunta para quem perguntou.</p>
+    </div>
+  </div>
+
+  <div class="finding">
+    <div class="mark">I</div>
+    <div>
+      <h3>Palavras de contador</h3>
+      <p>"Lançamentos" numa aba inteira. "Interpretar" num botão — ninguém
+      interpreta um gasto. "Comprometido", "Reserva", e um "A pagar" em cima de
+      zero.</p>
+    </div>
+  </div>
+
+  <div class="finding">
+    <div class="mark">J</div>
+    <div>
+      <h3>A primeira abertura é um deserto</h3>
+      <p>Tudo R$ 0,00, nenhum caminho, nenhuma pergunta. Quem instala hoje não sabe
+      o que fazer primeiro.</p>
+    </div>
+  </div>
+
+  <div class="finding danger">
+    <div class="mark">K</div>
+    <div>
+      <h3>A chave de API exclui a persona <span class="tag">decisão de produto</span></h3>
+      <p>Para usar a leitura de documentos, Sandra precisa criar conta no console da
+      Anthropic, ter cartão internacional e colar uma chave <code>sk-ant-…</code>.
+      <strong>Ela não vai fazer isso.</strong> Sem chave, sobra a regex que só
+      entende "mercado 170".</p>
+      <p>Isso não se resolve com UI. As opções:</p>
+      <div class="options">
+        <div class="option">
+          <h4><span class="n">01</span> Aceitar</h4>
+          <p>O app é para quem tem chave; a persona real é técnica. Honesto — mas
+          então este estudo inteiro perde a base.</p>
+        </div>
+        <div class="option pick">
+          <h4><span class="n">02</span> Inverter a hierarquia <span class="badge">recomendado</span></h4>
+          <p>Lançar gasto na mão vira o caminho principal; a IA vira acelerador
+          opcional. Preserva as quatro restrições e o app funciona no primeiro
+          minuto, com ou sem chave.</p>
+        </div>
+        <div class="option">
+          <h4><span class="n">03</span> Quebrar a restrição</h4>
+          <p>Backend com chave própria e custo por usuário. Fora do pedido
+          original.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Requisitos</h2>
+  <p class="sub">Cada um rastreado até o achado que o originou.</p>
+
+  <h3>Essenciais</h3>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th style="width:52px">#</th><th>requisito</th><th class="num">de</th></tr></thead>
+      <tbody>
+        <tr><td class="id">E1</td><td>Responder "posso?" sem exigir que ela digite um valor — atalhos com valores típicos aprendidos do histórico dela</td><td class="num">H</td></tr>
+        <tr><td class="id">E2</td><td>Nunca mostrar só o problema: todo número ruim vem com a próxima ação</td><td class="num">A</td></tr>
+        <tr><td class="id">E3</td><td>O mês vai de pagamento a pagamento, não do dia 1 ao 31</td><td class="num">B</td></tr>
+        <tr><td class="id">E4</td><td>A previsão inclui o gasto variável médio, ou para de exibir um número grande</td><td class="num">D</td></tr>
+        <tr><td class="id">E5</td><td>Cartão como entidade visível, com os juros destacados</td><td class="num">E</td></tr>
+        <tr><td class="id">E6</td><td>Datas em português: <code>20/08</code>, "ontem", "quinta"</td><td class="num">F</td></tr>
+        <tr><td class="id">E7</td><td>Contraste AA (≥4,5:1) em todo texto</td><td class="num">G</td></tr>
+        <tr><td class="id">E8</td><td>Lançar um gasto sem IA em até dois toques, como caminho principal</td><td class="num">K</td></tr>
+        <tr><td class="id">E9</td><td>Vocabulário dela em toda a interface</td><td class="num">I</td></tr>
+        <tr><td class="id">E10</td><td>Primeira abertura com três perguntas: quanto entra, que dia cai, quanto é o aluguel</td><td class="num">J</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Importantes</h3>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th style="width:52px">#</th><th>requisito</th></tr></thead>
+      <tbody>
+        <tr><td class="id">I1</td><td>Extrato agrupado por dia, com total do dia</td></tr>
+        <tr><td class="id">I2</td><td>Editar lançamento salvo — hoje só dá para apagar</td></tr>
+        <tr><td class="id">I3</td><td>Conferência de fatura longa (51 itens) por resumo, com "ver todos"</td></tr>
+        <tr><td class="id">I4</td><td>Alvo de toque ≥ 44px em tudo que é tocável</td></tr>
+        <tr><td class="id">I5</td><td>Affordance visível no toque-duplo-para-apagar</td></tr>
+        <tr><td class="id">I6</td><td>Modo claro — ela usa o celular na rua, no sol</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2>A direção</h2>
+  <div class="callout">
+    <p><strong>Decisão primeiro, explicação depois, relatório por último.</strong></p>
+    <p>Hoje a tela é um relatório com um simulador no meio. Ela precisa do
+    contrário.</p>
+  </div>
+
+  <h3>Resumo</h3>
+  <div class="compare">
+    <div class="phone">
+      <p class="phone-label"><span class="dot"></span> hoje</p>
+      <div class="screen">
+        <div class="mcard">
+          <span class="mlabel">Livre para gastar</span>
+          <span class="mbig mbad">-R$ 223,27</span>
+          <span class="msmall weak">-R$ 44,65 por dia · 5 dias até o fim do mês</span>
+        </div>
+        <div class="mcard">
+          <span class="mlabel">Posso gastar?</span>
+          <div class="minput">0,00</div>
+          <span class="msmall weak">Digite um valor para simular antes de gastar.</span>
+        </div>
+        <div class="mcard">
+          <div class="mrow"><span class="mlabel">Ainda vai sair</span><span class="mwarn">R$ 0,00</span></div>
+          <span class="msmall weak">Nada agendado até o fim do mês.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="phone">
+      <p class="phone-label after"><span class="dot"></span> proposta</p>
+      <div class="screen">
+        <div class="mcard">
+          <span class="mlabel soft">Faltam 9 dias para o salário</span>
+          <span class="msmall">Você já passou</span>
+          <span class="mmid mbad">R$ 223,27</span>
+          <span class="msmall">Até dia 5 não entra mais nada. O que der para segurar, segura.</span>
+        </div>
+        <div class="mcard">
+          <span class="mlabel soft">Posso gastar?</span>
+          <div class="mbtns">
+            <span class="mbtn">Mercado <span class="mdim">~R$ 170</span></span>
+            <span class="mbtn">Lanche <span class="mdim">~R$ 25</span></span>
+            <span class="mbtn ghost">Outro valor</span>
+          </div>
+        </div>
+        <div class="mcard">
+          <span class="mlabel soft">A fatura do cartão</span>
+          <div class="mrow"><span class="msmall">venceu 15/08</span><span class="mmid">R$ 324,92</span></div>
+          <span class="msmall mwarn">R$ 64,20 disso foi só juros</span>
+          <span class="msmall">Faltam 6x de R$ 129,90 do tênis e 9x de R$ 83,32 da geladeira</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p>Três mudanças carregam o resto. <strong>O negativo vira frase</strong> — "você
+  já passou R$ 223,27" diz a mesma coisa sem punir, e o vermelho fica reservado
+  para o que ainda dá para evitar. <strong>A pergunta vira botão</strong>, com
+  valores que o app já sabe do histórico dela. <strong>A fatura vira uma coisa
+  só</strong>, com os juros na cara e as parcelas que continuam.</p>
+
+  <h3>A previsão precisa virar faixa</h3>
+  <p>Enquanto E4 não estiver implementado, mostrar um intervalo é mais honesto que
+  um número exato e falso. Se só couber um número, que seja o pessimista. E seis
+  meses idênticos são ruído: três bastam, o resto atrás de "ver mais".</p>
+  <div class="wire">Setembro     sobra entre R$ 0 e R$ 590
+Outubro      sobra entre R$ 0 e R$ 590
+Novembro     sobra entre R$ 0 e R$ 590
+             ver mais 3 meses</div>
+
+  <h3>Adicionar — inverter a hierarquia</h3>
+  <p>Hoje a tela abre numa caixa de texto que depende de chave de API. Deve abrir
+  num teclado numérico: <strong>valor → no quê? → pronto.</strong> Dois toques e um
+  número. "Escrever em vez de digitar" e "Tenho um documento" descem para o rodapé,
+  como atalhos de quem tem chave.</p>
+
+  <h3>Extrato</h3>
+  <p>Agrupar por dia, com cabeçalho <code>Quinta, 20/08</code> e o total do dia à
+  direita. Itens da mesma fatura entram agrupados sob "Fatura do cartão",
+  expansível. Tocar abre para editar; apagar mora dentro da edição, não num toque
+  duplo escondido. E a aba deixa de se chamar "Lançamentos".</p>
+
+  <h3>Ajustes</h3>
+  <p>Dois blocos separados: <strong>Meu dinheiro</strong> (dia do pagamento, quanto
+  quero guardar) e <strong>Avançado</strong> (chave da Anthropic). Hoje a chave é a
+  primeira coisa da tela, o que sinaliza que o app é para desenvolvedor.</p>
+</section>
+
+<section>
+  <h2>Sistema visual</h2>
+
+  <h3>Cor: apagar <code>faint</code></h3>
+  <p>Existem hoje dois cinzas quase idênticos — <code>dim #8A94A8</code>, que passa
+  em 5,77:1, e <code>faint #5A6478</code>, que reprova em 2,96:1. A diferença visual
+  entre eles não paga o custo de acessibilidade.</p>
+  <p>Hierarquia de terceiro nível passa a ser feita por <strong>tamanho e
+  peso</strong>, não por contraste insuficiente. Onde <code>faint</code> for mesmo
+  necessário, <code>#8792A6</code> é o piso seguro (5,61:1 no card, 5,08:1 no
+  card2).</p>
+
+  <h3>Tipografia</h3>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>elemento</th><th>hoje</th><th>proposta</th></tr></thead>
+      <tbody>
+        <tr><td>Metadados do extrato</td><td>12px <code>faint</code></td><td>14px <code>dim</code></td></tr>
+        <tr><td>Título de card</td><td>11px caixa alta, tracking 1.2</td><td>13px sentence case, semibold</td></tr>
+        <tr><td>Números</td><td><code>tabular-nums</code></td><td>manter</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Caixa alta com tracking em tela pequena é decoração que custa legibilidade.
+  Data, categoria e origem são informação, não legenda.</p>
+
+  <h3>Modo claro</h3>
+  <p>O app é fixo em escuro. Como ela usa o celular na rua, o claro não é
+  preferência — é condição de uso. Os tokens já estão centralizados em
+  <code>src/ui.tsx</code>, então é troca de valores, não refatoração.</p>
+</section>
+
+<section>
+  <h2>O que não mudar</h2>
+  <p class="sub">Coisas que já estão certas e que uma reforma de UI tende a
+  atropelar.</p>
+  <div class="keep">
+    <div class="keep-item"><span class="tick">✓</span><p>O preview antes de salvar. Nada entra sem ela ver.</p></div>
+    <div class="keep-item"><span class="tick">✓</span><p>O aviso de divergência da fatura e o botão de fechar a diferença.</p></div>
+    <div class="keep-item"><span class="tick">✓</span><p>Os quatro veredictos — "Pode / Dá, mas aperta / Melhor não / Não dá". A linguagem já é a dela; só falta chegar até lá sem digitar valor.</p></div>
+    <div class="keep-item"><span class="tick">✓</span><p>Zero token em todo cálculo.</p></div>
+    <div class="keep-item"><span class="tick">✓</span><p><code>tabular-nums</code> em todos os números.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>O que só gente de verdade responde</h2>
+  <p class="sub">Nada abaixo está respondido por este estudo. Cinco conversas de
+  vinte minutos com pessoas nesse perfil resolvem todas.</p>
+  <div class="questions">
+    <div class="q"><p>A pergunta principal é mesmo "posso gastar?", ou é "quanto eu devo?"</p></div>
+    <div class="q"><p>Ver o total de juros pagos ajuda ou paralisa?</p></div>
+    <div class="q"><p>"Você já passou R$ 223" é acolhedor ou condescendente?</p></div>
+    <div class="q"><p>Ela confia num número que um app calculou sozinho?</p></div>
+    <div class="q"><p>Ela lança gasto no dia, ou só olha o app quando já está apertada?</p></div>
+    <div class="q"><p>Qual o tamanho real da barreira da chave de API — 90% dos usuários ou 100%?</p></div>
+  </div>
+</section>
+
+<footer>
+  <span>minhascontas · spec 04 · estudo de UX</span>
+  <span>Observado no app rodando em 27/08/2026, com dados da persona carregados.</span>
+  <span>Contrastes medidos pela fórmula de luminância relativa da WCAG 2.1.</span>
+</footer>
+
+</div>

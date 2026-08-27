@@ -40,6 +40,7 @@ decisões descartadas e o número que as descartou:
 | [specs/01-modelo-dados.md](specs/01-modelo-dados.md) | o `Tx`, por que tem duas datas, invariantes |
 | [specs/02-ia.md](specs/02-ia.md) | prompt, contrato da tool, custo, PDF protegido |
 | [specs/03-orcamento.md](specs/03-orcamento.md) | projeção de recorrentes e parcelas, regra do veredicto |
+| [specs/04-ux.md](specs/04-ux.md) | a persona, os 11 achados de UX, requisitos E1–E10 e a direção de UI |
 
 ## Mapa
 
@@ -96,6 +97,15 @@ Cada uma custou uma sessão. Não reintroduza:
   fatura de verdade e compare o total declarado antes de commitar. As quatro
   armadilhas conhecidas (próximas faturas, pagamento anterior, data sem ano, valor
   em dólar) estão em [specs/02-ia.md](specs/02-ia.md).
+
+## Antes de mexer na interface
+
+Leia [specs/04-ux.md](specs/04-ux.md). Toda mudança de UI deve citar o requisito
+que atende (E1–E10, I1–I6) ou o achado que corrige (A–K). Mudança de UI sem
+requisito é gosto pessoal, e gosto pessoal não sobrevive à próxima sessão.
+
+A lista "o que não mudar" no fim da spec existe porque reforma de UI costuma
+atropelar exatamente o que já estava certo.
 
 ## Fluxo de trabalho
 
