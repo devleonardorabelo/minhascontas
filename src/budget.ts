@@ -2,6 +2,9 @@ import type { Tx } from './types';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
+export const newId = () =>
+  Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+
 export const todayISO = (d = new Date()) =>
   `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 

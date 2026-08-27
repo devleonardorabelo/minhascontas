@@ -1,10 +1,11 @@
 // Tipos do SDK oficial, runtime via fetch: o SDK importa node:fs e não empacota
 // no React Native. `import type` some na compilação, então nada dele vai no bundle.
+//
+// Os imports abaixo levam `.ts` explícito de propósito: é o que permite rodar
+// tests/ai.test.ts no node, que exige extensão. O Metro aceita as duas formas.
 import type Anthropic from '@anthropic-ai/sdk';
-import { Platform } from 'react-native';
-import { CATEGORIES, type Tx } from './types';
-import { todayISO } from './budget';
-import { newId } from './store';
+import { CATEGORIES, type Tx } from './types.ts';
+import { newId, todayISO } from './budget.ts';
 
 // Modelo mais barato que lê PDF e imagem. Trocar aqui e só aqui.
 const MODEL = 'claude-haiku-4-5';
@@ -221,8 +222,11 @@ export async function extract(input: ExtractInput, apiKey: string): Promise<Extr
       'content-type': 'application/json',
       'x-api-key': apiKey.trim(),
       'anthropic-version': '2023-06-01',
-      // Sem servidor no meio, a chamada sai do próprio navegador na versão web.
-      ...(Platform.OS === 'web' ? { 'anthropic-dangerous-direct-browser-access': 'true' } : null),
+      // Sem este header o navegador barra a chamada no CORS. Vai sempre, sem
+      // checar plataforma: no nativo é inofensivo, e a condição por plataforma
+      // era a própria causa do bug — o Metro transpilava `Platform.OS` para
+      // `Platform.default.OS`, que não bate com 'web' e derrubava o header.
+      'anthropic-dangerous-direct-browser-access': 'true',
     },
     body: JSON.stringify(body),
   });

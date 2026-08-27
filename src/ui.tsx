@@ -1,7 +1,6 @@
 import { ReactNode } from 'react';
 import {
   ActivityIndicator,
-  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -203,7 +202,6 @@ export function Input(props: TextInputProps & { label?: string; help?: string })
           s.input,
           mono,
           { backgroundColor: C.card2, borderColor: C.line, color: C.text },
-          Platform.OS === 'web' ? ({ outlineStyle: 'none' } as any) : null,
           style,
         ]}
       />

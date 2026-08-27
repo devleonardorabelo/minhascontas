@@ -63,7 +63,7 @@ runtime — é o que o torna testável sem mock.
 
 ```bash
 npm run web          # também: ios, android
-npm test             # motor de orçamento
+npm test             # motor de orçamento e contrato da chamada de API
 npx tsc --noEmit     # typecheck
 npx expo export --platform ios --platform android --platform web --output-dir /tmp/b
 ```
@@ -92,6 +92,15 @@ Cada uma custou uma sessão. Não reintroduza:
 - **A saída da IA é entrada não confiável.** Nada entra no banco sem passar pelo
   `toTx()` em `src/ai.ts`.
 - **`expo-file-system` não roda na web** — nunca importe fora de `readFile.ts`.
+- **`Platform.OS` é mentira no bundle web.** O Metro transpila o nosso
+  `Platform.OS` para `Platform.default.OS` só no bundle web, e isso é `undefined`
+  — a comparação não estoura, ela fica silenciosamente falsa. Já derrubou o header
+  de CORS da API e quebrou a leitura de documentos inteira com "Failed to fetch".
+  **Não condicione comportamento por plataforma dentro de um arquivo compartilhado.**
+  Quando o comportamento realmente muda por plataforma, use arquivos separados
+  (`arquivo.ts` / `arquivo.web.ts`), que é como `readFile` faz.
+- **O header `anthropic-dangerous-direct-browser-access` vai sempre.** Sem ele o
+  navegador barra a chamada no CORS; no nativo ele é inofensivo. Há teste.
 - **Cor vem de `useC()`, nunca de hex na tela.** São dois temas, e toda combinação
   de texto sobre superfície foi medida em AA. Um hex solto passa no typecheck e
   quebra num dos temas — que é o bug que ninguém vê, porque ninguém testa os dois.

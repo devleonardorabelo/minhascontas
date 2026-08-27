@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSyncExternalStore } from 'react';
 import type { DB, Settings, Tx } from './types';
+export { newId } from './budget';
 
 const KEY = 'mc.v1';
 const EMPTY: DB = { tx: [], settings: { apiKey: '', reserva: 0 } };
@@ -49,9 +50,6 @@ export async function load() {
 export const useDB = () => useSyncExternalStore(subscribe, () => db, () => db);
 export const useReady = () => useSyncExternalStore(subscribe, () => ready, () => ready);
 export const getSettings = () => db.settings;
-
-export const newId = () =>
-  Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 
 export const addTx = (items: Tx[]) => set({ ...db, tx: [...db.tx, ...items] });
 export const removeTx = (id: string) =>
