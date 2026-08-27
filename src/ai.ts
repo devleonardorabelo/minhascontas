@@ -11,14 +11,46 @@ const MODEL = 'claude-haiku-4-5';
 
 export type Doc = { base64: string; mediaType: string; name: string };
 export type ExtractInput = { kind: 'text'; text: string } | { kind: 'files'; files: Doc[] };
+/** `warning` é conferência, não erro: os itens vêm mesmo assim, para o usuário decidir. */
+export type ExtractResult = { items: Tx[]; warning?: string };
 
 const SYSTEM = `Você extrai lançamentos financeiros de documentos e frases em português do Brasil.
 Responda SEMPRE chamando a ferramenta salvar. Valores em reais, sempre positivos.
 
-Fatura de cartão de crédito: kind=invoice, um item por compra da fatura,
-dueDate = data de vencimento da fatura, date = data da compra.
-Pagamento de fatura anterior, estorno e crédito viram type=income.
+Fatura de cartão de crédito: kind=invoice, dueDate = vencimento da fatura,
+declaredTotal = o total da fatura a pagar, um item por lançamento DESTA fatura.
+
+SÓ a seção de lançamentos desta fatura. IGNORE por completo a seção de previsão
+("Compras parceladas - próximas faturas", "Próximas faturas", "Parcelas futuras"):
+são as mesmas compras com a parcela seguinte e seriam contadas duas vezes.
+
+IGNORE o pagamento da fatura anterior ("Pagamento efetuado", "Pagamento via
+conta", "Total dos pagamentos"): é a quitação do mês passado, não é receita.
+Estorno e crédito de compra devolvida continuam sendo type=income.
+
+ATENÇÃO: alguns valores cobrados aparecem SÓ no resumo da fatura, fora da lista
+de lançamentos, e são esquecidos com facilidade. Procure e inclua cada um como
+item próprio, com date = vencimento da fatura:
+- "saldo financiado" / "saldo anterior" / "saldo rotativo" (o que não foi pago no mês passado)
+- "repasse de IOF" / "IOF" das compras internacionais
+- "encargos" / "juros de financiamento" / "multa" / "mora"
+- anuidade, seguro, parcela de refinanciamento
+
+A soma de TODOS os itens tem que fechar com o total a pagar da fatura. Se não
+fechar, faltou algum desses.
+
+Compra internacional: use SEMPRE o valor em REAIS, que é o que sai da conta.
+A mesma linha traz o valor na moeda estrangeira e a cotação — ignore os dois.
+No Itaú o valor em reais vem logo depois do nome do estabelecimento e o valor em
+dólar vem na linha de baixo, antes de "Dólar de Conversão"; na dúvida, o valor em
+reais é o MAIOR dos dois e é ele que soma com o "Total transações inter. em R$".
+
 Parcelas viram installment no formato "3/12".
+
+Data sem ano ("14/09"): escolha o ano que deixa a compra ANTES do vencimento da
+fatura — nunca depois. Numa fatura de agosto/2026, "14/09" é 2025, não 2026. Em
+parcela n/N, a compra foi cerca de n-1 meses antes do fechamento; use isso para
+conferir o ano.
 
 Conta/boleto (água, luz, gás, internet, telefone, condomínio, mensalidade):
 kind=bill, UM único item com o valor total a pagar, date = data de emissão
@@ -44,6 +76,10 @@ const TOOL: Anthropic.Tool = {
     properties: {
       kind: { type: 'string', enum: ['invoice', 'bill', 'payslip', 'manual'] },
       dueDate: { type: 'string', description: 'YYYY-MM-DD, vencimento da fatura/conta ou data do pagamento' },
+      declaredTotal: {
+        type: 'number',
+        description: 'Total da fatura impresso no documento, para conferir a soma dos itens',
+      },
       items: {
         type: 'array',
         items: {
@@ -74,7 +110,7 @@ type RawItem = {
   installment?: string;
   recurring?: boolean;
 };
-type RawOut = { kind?: string; dueDate?: string; items?: RawItem[] };
+type RawOut = { kind?: string; dueDate?: string; declaredTotal?: number; items?: RawItem[] };
 
 const isDate = (s?: string) => !!s && /^\d{4}-\d{2}-\d{2}$/.test(s);
 
@@ -150,7 +186,7 @@ const docBlock = (d: Doc): Anthropic.ContentBlockParam =>
       };
 
 /** Única chamada de API do app. Não grava nada: devolve para a tela confirmar. */
-export async function extract(input: ExtractInput, apiKey: string): Promise<Tx[]> {
+export async function extract(input: ExtractInput, apiKey: string): Promise<ExtractResult> {
   if (!apiKey.trim()) throw new MissingKey();
 
   const hoje = `Hoje é ${todayISO()}.`;
@@ -205,11 +241,26 @@ export async function extract(input: ExtractInput, apiKey: string): Promise<Tx[]
   const txs = toTx(out, source, newId());
 
   if (!txs.length) throw new Error('Nada reconhecido nesse conteúdo.');
+
+  const avisos: string[] = [];
   if (res.stop_reason === 'max_tokens') {
-    txs[txs.length - 1].description += ' (leitura truncada — confira o fim da fatura)';
+    avisos.push('A leitura foi cortada no meio — confira se o fim do documento entrou.');
   }
-  return txs;
+  // A fatura declara o próprio total. Se a soma dos itens não bate, algo foi lido
+  // a mais (seção de próximas faturas) ou a menos. Avisa, não bloqueia.
+  const declarado = Number(out.declaredTotal);
+  if (Number.isFinite(declarado) && declarado > 0) {
+    const soma = txs.reduce((a, t) => a + (t.type === 'expense' ? t.amount : -t.amount), 0);
+    if (Math.abs(soma - declarado) > 0.5) {
+      avisos.push(
+        `A soma dos lançamentos deu ${money(soma)} e o documento declara ${money(declarado)}. Confira antes de salvar.`
+      );
+    }
+  }
+  return { items: txs, warning: avisos.join(' ') || undefined };
 }
+
+const money = (n: number) => n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
 /**
  * Rede de segurança para quando não há chave configurada: entende "uber 32,50".

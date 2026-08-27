@@ -2,7 +2,7 @@ import { useState } from 'react';
 import * as DocumentPicker from 'expo-document-picker';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { addTx, useDB } from '../store';
-import { extract, localParse, MissingKey } from '../ai';
+import { extract, localParse, MissingKey, type ExtractResult } from '../ai';
 import { readBase64 } from '../readFile';
 import { brl } from '../budget';
 import { Btn, C, Card, H, mono, st } from '../ui';
@@ -16,13 +16,15 @@ export default function Adicionar() {
   const [preview, setPreview] = useState<Tx[]>([]);
   const [busy, setBusy] = useState<'' | 'text' | 'file'>('');
   const [err, setErr] = useState('');
+  const [aviso, setAviso] = useState('');
 
-  const run = async (fn: () => Promise<Tx[]>, which: 'text' | 'file') => {
+  const run = async (fn: () => Promise<ExtractResult>, which: 'text' | 'file') => {
     setBusy(which);
     setErr('');
     try {
-      const txs = await fn();
-      setPreview((p) => [...p, ...txs]);
+      const { items, warning } = await fn();
+      setPreview((p) => [...p, ...items]);
+      setAviso(warning ?? '');
     } catch (e: any) {
       setErr(e instanceof MissingKey ? e.message : e?.message || 'Falhou. Tente de novo.');
     } finally {
@@ -34,15 +36,15 @@ export default function Adicionar() {
     const t = text.trim();
     if (!t) return;
     run(async () => {
-      const txs = db.settings.apiKey.trim()
+      const r = db.settings.apiKey.trim()
         ? await extract({ kind: 'text', text: t }, db.settings.apiKey)
-        : localParse(t);
-      if (!txs.length)
+        : { items: localParse(t) };
+      if (!r.items.length)
         throw new Error(
           'Sem chave da Anthropic, só entendo frases no formato "descrição 32,90". Configure a chave em Ajustes para leitura completa.'
         );
       setText('');
-      return txs;
+      return r;
     }, 'text');
   };
 
@@ -75,6 +77,7 @@ export default function Adicionar() {
   const save = () => {
     addTx(preview.filter((t) => t.amount > 0));
     setPreview([]);
+    setAviso('');
   };
 
   return (
@@ -110,6 +113,12 @@ export default function Adicionar() {
       {err ? (
         <Card style={{ borderColor: C.bad }}>
           <Text style={{ color: C.bad, fontSize: 14 }}>{err}</Text>
+        </Card>
+      ) : null}
+
+      {aviso && preview.length > 0 ? (
+        <Card style={{ borderColor: C.warn }}>
+          <Text style={{ color: C.warn, fontSize: 13, lineHeight: 19 }}>{aviso}</Text>
         </Card>
       ) : null}
 
@@ -150,7 +159,14 @@ export default function Adicionar() {
           ))}
           <View style={{ flexDirection: 'row', gap: 10 }}>
             <Btn label="Salvar" onPress={save} style={{ flex: 1 }} />
-            <Btn label="Descartar" kind="ghost" onPress={() => setPreview([])} />
+            <Btn
+              label="Descartar"
+              kind="ghost"
+              onPress={() => {
+                setPreview([]);
+                setAviso('');
+              }}
+            />
           </View>
         </Card>
       ) : null}

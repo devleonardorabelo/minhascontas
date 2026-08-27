@@ -91,6 +91,11 @@ Cada uma custou uma sessão. Não reintroduza:
 - **A saída da IA é entrada não confiável.** Nada entra no banco sem passar pelo
   `toTx()` em `src/ai.ts`.
 - **`expo-file-system` não roda na web** — nunca importe fora de `readFile.ts`.
+- **Prompt de fatura é frágil.** Detalhar mais uma regra já derrubou a precisão de
+  99,7% para 92% numa fatura real. Mexeu no prompt de `invoice`? Rode contra uma
+  fatura de verdade e compare o total declarado antes de commitar. As quatro
+  armadilhas conhecidas (próximas faturas, pagamento anterior, data sem ano, valor
+  em dólar) estão em [specs/02-ia.md](specs/02-ia.md).
 
 ## Fluxo de trabalho
 
