@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import * as DocumentPicker from 'expo-document-picker';
-import { Modal, Pressable, Text, TextInput, View } from 'react-native';
+import { Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { addTx, newId, useDB } from '../store';
 import {
   diffTx,
@@ -12,7 +12,7 @@ import {
 } from '../ai';
 import { readBase64 } from '../readFile';
 import { brl, monthLabel, monthOf, todayISO } from '../budget';
-import { Btn, Chip, F, Input, Kicker, Meta, PAD, SP, mono, useC } from '../ui';
+import { Btn, Chip, F, Input, Kicker, Link, Meta, PAD, SP, mono, useC } from '../ui';
 import Conferir from './Conferir';
 import type { Tx } from '../types';
 
@@ -245,71 +245,68 @@ export default function Adicionar() {
         />
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: SP.md }}>
           <Meta style={{ flex: 1 }}>Fica só neste aparelho, na hora.</Meta>
-          <Text
-            onPress={() => setFolha(true)}
-            accessibilityRole="button"
-            accessibilityLabel="Mandar fatura, conta ou contracheque"
-            style={[F(800), { fontSize: 13, color: C.accentInk }]}>
-            Mandar fatura →
-          </Text>
+          <Link label="Mandar fatura →" onPress={() => setFolha(true)} align="flex-end" />
         </View>
       </View>
 
-      {/* folha de importação */}
-      <Modal visible={folha} transparent animationType="slide" onRequestClose={() => setFolha(false)}>
-        <Pressable style={{ flex: 1, backgroundColor: 'rgba(32,30,29,0.5)' }} onPress={() => setFolha(false)} />
-        <View style={{ backgroundColor: C.bg, borderTopWidth: 2, borderTopColor: C.rule, padding: PAD, gap: SP.md }}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Kicker>Mandar para eu ler</Kicker>
-            <Text
-              onPress={() => setFolha(false)}
-              accessibilityRole="button"
-              style={[F(800), { fontSize: 13, color: C.accentInk }]}>
-              Fechar
-            </Text>
+      {/* folha de importação — overlay comum, não Modal: dois Modal irmãos se
+          atropelam no react-native-web e o segundo monta sem pintar */}
+      {folha ? (
+        <View style={StyleSheet.absoluteFill} accessibilityViewIsModal>
+          <Pressable
+            style={{ flex: 1, backgroundColor: 'rgba(32,30,29,0.5)' }}
+            accessibilityRole="button"
+            accessibilityLabel="Fechar"
+            onPress={() => setFolha(false)}
+          />
+          <View style={{ backgroundColor: C.bg, borderTopWidth: 2, borderTopColor: C.rule, padding: PAD, gap: SP.md }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Kicker>Mandar para eu ler</Kicker>
+              <Link label="Fechar" onPress={() => setFolha(false)} align="flex-end" />
+            </View>
+            <Btn
+              label="Escolher arquivo"
+              onPress={onFile}
+              busy={busy === 'file'}
+              disabled={busy !== ''}
+              hint="Fatura, conta ou contracheque, em PDF ou foto. Pode mandar vários."
+            />
+            <TextInput
+              value={texto}
+              onChangeText={setTexto}
+              placeholder={'Ou escreva: almoço 32,90 hoje'}
+              placeholderTextColor={C.dimmer}
+              multiline
+              accessibilityLabel="Escreva o que aconteceu"
+              selectionColor={C.accent}
+              style={[
+                F(400),
+                {
+                  minHeight: 80,
+                  borderWidth: 1,
+                  borderColor: C.line,
+                  backgroundColor: C.surface,
+                  color: C.text,
+                  fontSize: 15,
+                  padding: 12,
+                  textAlignVertical: 'top',
+                },
+              ]}
+            />
+            <Btn
+              label="Entender o que escrevi"
+              kind="ghost"
+              onPress={onText}
+              busy={busy === 'text'}
+              disabled={!texto.trim() || busy !== ''}
+            />
+            {!db.settings.apiKey.trim() ? (
+              <Meta>Ler documento precisa da chave em Ajustes. O teclado da tela funciona sem ela.</Meta>
+            ) : null}
+            {err ? <Text style={[F(600), { fontSize: 14, color: C.accentInk, lineHeight: 20 }]}>{err}</Text> : null}
           </View>
-          <Btn
-            label="Escolher arquivo"
-            onPress={onFile}
-            busy={busy === 'file'}
-            disabled={busy !== ''}
-            hint="Fatura, conta ou contracheque, em PDF ou foto. Pode mandar vários."
-          />
-          <TextInput
-            value={texto}
-            onChangeText={setTexto}
-            placeholder={'Ou escreva: almoço 32,90 hoje'}
-            placeholderTextColor={C.dimmer}
-            multiline
-            accessibilityLabel="Escreva o que aconteceu"
-            selectionColor={C.accent}
-            style={[
-              F(400),
-              {
-                minHeight: 80,
-                borderWidth: 1,
-                borderColor: C.line,
-                backgroundColor: C.surface,
-                color: C.text,
-                fontSize: 15,
-                padding: 12,
-                textAlignVertical: 'top',
-              },
-            ]}
-          />
-          <Btn
-            label="Entender o que escrevi"
-            kind="ghost"
-            onPress={onText}
-            busy={busy === 'text'}
-            disabled={!texto.trim() || busy !== ''}
-          />
-          {!db.settings.apiKey.trim() ? (
-            <Meta>Ler documento precisa da chave em Ajustes. O teclado da tela funciona sem ela.</Meta>
-          ) : null}
-          {err ? <Text style={[F(600), { fontSize: 14, color: C.accentInk, lineHeight: 20 }]}>{err}</Text> : null}
         </View>
-      </Modal>
+      ) : null}
 
       {/* conferência em tela cheia */}
       <Modal visible={preview.length > 0} animationType="slide" onRequestClose={() => setPreview([])}>

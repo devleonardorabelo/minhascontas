@@ -101,6 +101,29 @@ possível sobre vermelho.
   (1 · 5 · 10 · 15 · 20 · outro); o aluguel virou opcional, porque quem não sabe
   o valor de cor travava ali.
 
+## Achados dos testes E2E (27/08/2026)
+
+Bateria completa pelo navegador, com chave real. Quatro defeitos que só a
+execução revelou:
+
+1. **Dois `Modal` irmãos se atropelam no react-native-web.** A folha de
+   importação e a tela Conferir eram ambas `Modal`. O Conferir montava no DOM —
+   o texto estava lá — e não pintava: a leitura de fatura simplesmente não
+   acontecia, sem erro nenhum. A folha virou overlay comum; **um portal só na
+   árvore.**
+2. **`adjustsFontSizeToFit` não funciona no react-native-web.** As três células do
+   Resumo cortavam valores de três dígitos ("R$ 520,..."). Fonte para 17px e o
+   "R$" saiu — o rótulo já diz o que é.
+3. **`hitSlop` não vale no web.** Setas de mês mediam 8×23 e os links de texto,
+   14px de altura. Entraram `Link` e `Seta` com área real; auditoria fechou em
+   **zero alvos abaixo de 44px** nas cinco telas.
+4. **Mês sem nada anotado exibia "Você já passou R$ 300"** — a reserva sozinha
+   virando dívida. Verdade aritmética, mentira na vida dela. Virou estado vazio
+   com o que fazer a seguir.
+
+Também confirmado em execução: as três primeiras não aparecem no typecheck, nos
+19 testes nem no `expo export`. Só rodando.
+
 ## O que não mudar
 
 - `F(peso)` em vez de `fontWeight` em qualquer texto.

@@ -26,6 +26,12 @@
     "backgroundColor": "#0C0F14",
     "plugins": [
       "expo-font"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "f8b7f83e-903f-4dda-a7e4-e0eefbae2dbd"
+      }
+    },
+    "owner": "leonardorabelo"
   }
 }

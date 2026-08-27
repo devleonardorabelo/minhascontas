@@ -11,7 +11,7 @@ import {
   shortMonthLabel,
   todayISO,
 } from '../budget';
-import { Btn, Empty, F, Kicker, Meta, PAD, SP, mono, useC } from '../ui';
+import { Btn, Empty, F, Kicker, Meta, PAD, SP, Seta, mono, useC } from '../ui';
 
 const ORIGEM: Record<string, string> = {
   invoice: 'do cartão',
@@ -52,15 +52,11 @@ export default function Extrato() {
       <View style={[st.head, { borderBottomColor: C.rule }]}>
         <Kicker>Extrato</Kicker>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: SP.md }}>
-          <Pressable onPress={() => setMonth(addMonths(month, -1))} hitSlop={16} accessibilityRole="button" accessibilityLabel="Mês anterior">
-            <Text style={{ color: C.dimmer, fontSize: 20 }}>‹</Text>
-          </Pressable>
+          <Seta dir="prev" onPress={() => setMonth(addMonths(month, -1))} />
           <Text style={[F(800), { fontSize: 13, letterSpacing: 0.52, color: C.text }]}>
             {shortMonthLabel(month).toUpperCase()}
           </Text>
-          <Pressable onPress={() => setMonth(addMonths(month, 1))} hitSlop={16} accessibilityRole="button" accessibilityLabel="Próximo mês">
-            <Text style={{ color: C.dimmer, fontSize: 20 }}>›</Text>
-          </Pressable>
+          <Seta dir="next" onPress={() => setMonth(addMonths(month, 1))} />
         </View>
       </View>
 

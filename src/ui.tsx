@@ -110,11 +110,13 @@ export function Cells({ items }: { items: { label: string; value: string }[] }) 
         <View
           key={c.label}
           style={[
-            { flex: 1, paddingTop: SP.md, paddingBottom: 2, paddingRight: SP.md },
-            i > 0 ? { borderLeftWidth: 1, borderLeftColor: C_.lineSoft, paddingLeft: SP.md } : null,
+            { flex: 1, paddingTop: SP.md, paddingBottom: 2, paddingRight: SP.sm },
+            i > 0 ? { borderLeftWidth: 1, borderLeftColor: C_.lineSoft, paddingLeft: SP.sm } : null,
           ]}>
-          <Text style={[s.cellLabel]}>{c.label}</Text>
-          <Text style={[s.cellValue, mono]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
+          <Text style={[s.cellLabel]} numberOfLines={1}>
+            {c.label}
+          </Text>
+          <Text style={[s.cellValue, mono]} numberOfLines={1}>
             {c.value}
           </Text>
         </View>
@@ -226,6 +228,53 @@ export function Chip({
   );
 }
 
+/**
+ * Link de texto com área de toque de verdade. `Text` com `onPress` fica com a
+ * altura da linha (14px medidos), e `hitSlop` não vale no react-native-web —
+ * o alvo real fica abaixo do mínimo em qualquer plataforma que não seja nativa.
+ */
+export function Link({
+  label,
+  onPress,
+  style,
+  align = 'flex-start',
+}: {
+  label: string;
+  onPress: () => void;
+  style?: ViewStyle;
+  align?: 'flex-start' | 'flex-end' | 'center';
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      style={({ pressed }) => [
+        { minHeight: 44, minWidth: 44, paddingHorizontal: 4, justifyContent: 'center', alignItems: align },
+        pressed && { opacity: 0.6 },
+        style,
+      ]}>
+      <Text style={[s.link, F(800)]}>{label}</Text>
+    </Pressable>
+  );
+}
+
+/** Seta de navegação de mês, com área de toque em vez de hitSlop. */
+export function Seta({ dir, onPress }: { dir: 'prev' | 'next'; onPress: () => void }) {
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={dir === 'prev' ? 'Mês anterior' : 'Próximo mês'}
+      style={({ pressed }) => [
+        { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
+        pressed && { opacity: 0.6 },
+      ]}>
+      <Text style={{ color: C_.dimmer, fontSize: 20 }}>{dir === 'prev' ? '‹' : '›'}</Text>
+    </Pressable>
+  );
+}
+
 export function Input(props: TextInputProps & { label?: string; help?: string }) {
   const { label, help, style, ...rest } = props;
   return (
@@ -282,7 +331,7 @@ const s = StyleSheet.create({
     color: C_.dim,
   },
   cellLabel: { fontFamily: 'Archivo_400Regular', fontSize: 12, color: C_.dim },
-  cellValue: { fontFamily: 'Archivo_800ExtraBold', fontSize: 19, color: C_.text },
+  cellValue: { fontFamily: 'Archivo_800ExtraBold', fontSize: 17, color: C_.text },
   band: { backgroundColor: C_.accentSurface, paddingVertical: 10, paddingHorizontal: 12, gap: 2 },
   btn: {
     alignItems: 'flex-start',
@@ -314,6 +363,7 @@ const s = StyleSheet.create({
   barBg: { height: 10, backgroundColor: C_.lineSoft, overflow: 'hidden' },
   empty: { fontSize: 15, lineHeight: 23, color: C_.dim },
   meta: { fontSize: 13, lineHeight: 19, color: C_.dim },
+  link: { fontSize: 13, color: C_.accentInk },
 });
 
 export const st = s;

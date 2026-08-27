@@ -1,7 +1,7 @@
 import { ScrollView, Text, TextInput, View } from 'react-native';
 import { Pressable } from 'react-native';
 import { brl } from '../budget';
-import { Band, Btn, F, Kicker, Meta, PAD, Rule, SP, mono, useC } from '../ui';
+import { Band, Btn, F, Kicker, Link, Meta, PAD, Rule, SP, mono, useC } from '../ui';
 import type { ExtractWarning } from '../ai';
 import type { Tx } from '../types';
 
@@ -40,13 +40,7 @@ export default function Conferir({
     <View style={{ flex: 1, backgroundColor: C.bg }}>
       <View style={[st.head, { borderBottomColor: C.rule }]}>
         <Kicker>{titulo}</Kicker>
-        <Text
-          onPress={onCancelar}
-          accessibilityRole="button"
-          accessibilityLabel="Cancelar e voltar"
-          style={[F(800), { fontSize: 13, color: C.accentInk }]}>
-          Cancelar
-        </Text>
+        <Link label="Cancelar" onPress={onCancelar} align="flex-end" />
       </View>
 
       <ScrollView keyboardShouldPersistTaps="handled">
@@ -112,6 +106,10 @@ export default function Conferir({
                     {t.date.slice(8, 10)}/{t.date.slice(5, 7)}
                     {juros ? ' · não virou nada' : ` · ${t.category}`}
                     {t.installment ? ` · ${t.installment.replace('/', ' de ')}` : ''}
+                    {/* numa conta o vencimento é o dado que importa mais que a emissão */}
+                    {t.dueDate && t.dueDate !== t.date
+                      ? ` · vence ${t.dueDate.slice(8, 10)}/${t.dueDate.slice(5, 7)}`
+                      : ''}
                   </Meta>
                 </View>
                 <TextInput

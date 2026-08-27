@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ScrollView, Text, TextInput, View } from 'react-native';
 import { addTx, newId, saveSettings } from '../store';
 import { todayISO } from '../budget';
-import { Btn, Chip, F, Kicker, Meta, PAD, Rule, SP, mono, useC } from '../ui';
+import { Btn, Chip, F, Kicker, Link, Meta, PAD, SP, mono, useC } from '../ui';
 import type { Tx } from '../types';
 
 const num = (v: string) => {
@@ -140,12 +140,7 @@ export default function Comecar() {
 
       <View style={{ borderTopWidth: 2, borderTopColor: C.rule, paddingHorizontal: PAD, paddingVertical: 14, gap: SP.md }}>
         <Btn label="Pronto" onPress={pronto} disabled={num(salario) === 0} />
-        <Text
-          onPress={() => saveSettings({ onboarded: true })}
-          accessibilityRole="button"
-          style={[F(800), { fontSize: 14, color: C.accentInk }]}>
-          Pular por enquanto
-        </Text>
+        <Link label="Pular por enquanto" onPress={() => saveSettings({ onboarded: true })} />
       </View>
     </View>
   );

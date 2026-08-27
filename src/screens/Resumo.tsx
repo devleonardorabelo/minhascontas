@@ -19,7 +19,7 @@ import {
   typicalSpends,
   type Verdict,
 } from '../budget';
-import { Bar, Band, Card, Cells, Chip, Empty, F, H, Input, Kicker, Meta, PAD, Rule, SP, mono, useC } from '../ui';
+import { Bar, Band, Card, Cells, Chip, Empty, F, H, Input, Kicker, Meta, PAD, Rule, SP, Seta, mono, useC } from '../ui';
 
 const VERDICT: Record<Verdict, string> = {
   pode: 'Pode.',
@@ -70,6 +70,9 @@ export default function Resumo() {
 
   const sim = valor && valor > 0 ? canAfford(valor, view, rate) : null;
   const positivo = view.free >= 0;
+  // Mês sem nada anotado: a reserva sozinha vira "você já passou R$ 300", que é
+  // verdade aritmética e mentira na vida dela.
+  const vazio = view.items.length === 0;
   const maxCat = view.byCategory[0]?.total ?? 1;
 
   const kicker =
@@ -77,12 +80,12 @@ export default function Resumo() {
       ? `Dá para gastar em ${shortMonthLabel(month).toLowerCase()}`
       : `Dá para gastar até dia ${payday.getDate()}`;
 
+  // Sem "R$" repetido três vezes: o rótulo já diz o que é, e o símbolo comia a
+  // largura de que o número precisa em tela de 375.
   const celulas = [
-    { label: 'por dia', value: brl(Math.max(view.free, 0) / Math.max(dias ?? view.daysLeft, 1)) },
-    { label: 'ainda vai cair', value: brl(view.committed) },
-    ...(db.settings.reserva > 0
-      ? [{ label: 'guardado', value: brl(db.settings.reserva) }]
-      : []),
+    { label: 'por dia', value: cents(Math.max(view.free, 0) / Math.max(dias ?? view.daysLeft, 1)) },
+    { label: 'ainda vai cair', value: cents(view.committed) },
+    ...(db.settings.reserva > 0 ? [{ label: 'guardado', value: cents(db.settings.reserva) }] : []),
   ];
 
   return (
@@ -91,38 +94,41 @@ export default function Resumo() {
       <View style={[st.head, { borderBottomColor: C.rule }]}>
         <Kicker>Minhas contas</Kicker>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: SP.md }}>
-          <Pressable
-            onPress={() => setMonth(addMonths(month, -1))}
-            hitSlop={16}
-            accessibilityRole="button"
-            accessibilityLabel="Mês anterior">
-            <Text style={{ color: C.dimmer, fontSize: 20 }}>‹</Text>
-          </Pressable>
+          <Seta dir="prev" onPress={() => setMonth(addMonths(month, -1))} />
           <Text style={[F(800), st.mes, { color: C.text }]}>
             {shortMonthLabel(month).toUpperCase()}
           </Text>
-          <Pressable
-            onPress={() => setMonth(addMonths(month, 1))}
-            hitSlop={16}
-            accessibilityRole="button"
-            accessibilityLabel="Próximo mês">
-            <Text style={{ color: C.dimmer, fontSize: 20 }}>›</Text>
-          </Pressable>
+          <Seta dir="next" onPress={() => setMonth(addMonths(month, 1))} />
         </View>
       </View>
 
       <ScrollView keyboardShouldPersistTaps="handled">
         {/* 1 — o número */}
         <Card style={{ paddingTop: 24, gap: SP.sm }}>
-          <Kicker>{positivo ? kicker : 'Você já passou'}</Kicker>
-          <Text
-            style={[F(800), mono, st.heroi, { color: positivo ? C.text : C.accentInk }]}
-            numberOfLines={1}
-            adjustsFontSizeToFit
-            minimumFontScale={0.6}>
-            {brl(Math.abs(view.free))}
-          </Text>
-          <Cells items={celulas} />
+          {vazio ? (
+            <>
+              <Kicker>Ainda não sei nada de {shortMonthLabel(month).toLowerCase()}</Kicker>
+              <Text style={[F(800), st.heroi, { color: C.dim, fontSize: 34, lineHeight: 40 }]}>
+                Sem nada anotado
+              </Text>
+              <Text style={[F(400), st.corpo, { color: C.text }]}>
+                Toque em Anotar e ponha o que entrou e o que saiu. Com dois ou três lançamentos eu
+                já consigo dizer quanto dá para gastar.
+              </Text>
+            </>
+          ) : (
+            <>
+              <Kicker>{positivo ? kicker : 'Você já passou'}</Kicker>
+              <Text
+                style={[F(800), mono, st.heroi, { color: positivo ? C.text : C.accentInk }]}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.6}>
+                {brl(Math.abs(view.free))}
+              </Text>
+              <Cells items={celulas} />
+            </>
+          )}
         </Card>
 
         {/* 2 — posso gastar */}

@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { Linking, ScrollView, Text, TextInput, View } from 'react-native';
 import { saveSettings, useDB, wipe } from '../store';
 import { brl, paydayOf } from '../budget';
-import { Btn, Card, F, Input, Kicker, Meta, Rule, SP, mono, useC } from '../ui';
+import { Btn, Card, F, Input, Kicker, Link, Meta, Rule, SP, mono, useC } from '../ui';
 
 export default function Ajustes() {
   const C = useC();
@@ -88,13 +88,7 @@ export default function Ajustes() {
             <Text style={[F(400), mono, { fontSize: 15, color: C.text, flex: 1 }]} numberOfLines={1}>
               {mascara}
             </Text>
-            <Text
-              onPress={() => setTrocando(true)}
-              accessibilityRole="button"
-              accessibilityLabel="Trocar a chave"
-              style={[F(800), { fontSize: 13, color: C.accentInk }]}>
-              Trocar
-            </Text>
+            <Link label="Trocar" onPress={() => setTrocando(true)} />
           </View>
         ) : (
           <>
