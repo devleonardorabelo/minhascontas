@@ -193,3 +193,167 @@ export function futureInstallments(txs: Tx[], from: string, months = 6) {
 
 export const brl = (n: number) =>
   n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Formatação em português (SPEC 04, achado F)
+// ─────────────────────────────────────────────────────────────────────────────
+
+const DIAS = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
+const MESES = [
+  'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+  'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro',
+];
+
+const asDate = (iso: string) => {
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(y, m - 1, d);
+};
+
+export const monthLabel = (month: string) => {
+  const [y, m] = month.split('-').map(Number);
+  return `${MESES[m - 1]} de ${y}`;
+};
+
+export const shortMonthLabel = (month: string) => {
+  const [y, m] = month.split('-').map(Number);
+  return `${MESES[m - 1]}${y !== new Date().getFullYear() ? ` de ${y}` : ''}`;
+};
+
+/** "hoje", "ontem", "quinta", ou "20/08". Sem Intl: o ICU do Android é irregular. */
+export function dayLabel(iso: string, today = todayISO()) {
+  const diff = Math.round((asDate(iso).getTime() - asDate(today).getTime()) / 864e5);
+  if (diff === 0) return 'hoje';
+  if (diff === -1) return 'ontem';
+  if (diff === 1) return 'amanhã';
+  if (diff > -7 && diff < 7) return DIAS[asDate(iso).getDay()];
+  return `${iso.slice(8, 10)}/${iso.slice(5, 7)}`;
+}
+
+/** Cabeçalho de dia no extrato: "Hoje, 27/08" / "Quarta, 19/08". */
+export function fullDayLabel(iso: string, today = todayISO()) {
+  const dm = `${iso.slice(8, 10)}/${iso.slice(5, 7)}`;
+  const rel = dayLabel(iso, today);
+  // Longe da janela relativa, dayLabel já devolve a data: aí usa o dia da semana.
+  const nome = rel === dm ? DIAS[asDate(iso).getDay()] : rel;
+  return `${nome.charAt(0).toUpperCase() + nome.slice(1)}, ${dm}`;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// A janela dela vai de pagamento a pagamento, não do dia 1 ao 31 (achado B)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Dia do mês em que o salário cai, deduzido da entrada recorrente mais recente. */
+export function paydayOf(txs: Tx[]): number | null {
+  const inc = txs.filter((t) => t.type === 'income' && t.recurring);
+  if (!inc.length) return null;
+  const last = inc.reduce((a, b) => (eff(a) > eff(b) ? a : b));
+  return Number(eff(last).slice(8, 10));
+}
+
+/** Dias até o próximo pagamento, hoje incluído. `null` quando não há salário conhecido. */
+export function daysToPayday(txs: Tx[], today = todayISO()): number | null {
+  const p = paydayOf(txs);
+  if (!p) return null;
+  const day = Number(today.slice(8, 10));
+  const thisMonth = monthOf(today);
+  const here = Math.min(p, daysInMonth(thisMonth));
+  if (day < here) return here - day;
+  const next = addMonths(thisMonth, 1);
+  return daysInMonth(thisMonth) - day + Math.min(p, daysInMonth(next));
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Atalhos aprendidos: ela não sabe quanto custa "ir ao mercado" (achado H)
+// ─────────────────────────────────────────────────────────────────────────────
+
+const median = (v: number[]) => {
+  const s = [...v].sort((a, b) => a - b);
+  const m = Math.floor(s.length / 2);
+  return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+};
+
+/**
+ * As categorias variáveis que ela mais repete, com o valor mediano de cada uma.
+ * Mediana e não média: uma compra de mês inteiro não pode distorcer o atalho.
+ */
+export function typicalSpends(txs: Tx[], today = todayISO(), limit = 3) {
+  const [y, m, d] = today.split('-').map(Number);
+  const from = todayISO(new Date(y, m - 1, d - 89));
+  const byCat = new Map<string, number[]>();
+  for (const t of txs) {
+    if (t.type !== 'expense' || t.recurring || t.installment) continue;
+    if (t.date < from || t.date > today) continue;
+    byCat.set(t.category, [...(byCat.get(t.category) ?? []), t.amount]);
+  }
+  return [...byCat]
+    .filter(([, v]) => v.length >= 2)
+    .sort((a, b) => b[1].length - a[1].length)
+    .slice(0, limit)
+    .map(([category, v]) => ({ category, amount: Math.round(median(v)) }));
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// A fatura é uma coisa só na cabeça dela, não sete categorias (achado E)
+// ─────────────────────────────────────────────────────────────────────────────
+
+const JUROS = /juros|encargo|iof|mora|rotativ|multa|anuidade|financiad/i;
+
+export function cardInvoice(txs: Tx[], month: string) {
+  const items = txs.filter((t) => t.source === 'invoice' && monthOf(eff(t)) === month);
+  if (!items.length) return null;
+  const total = items.reduce((a, t) => a + (t.type === 'income' ? -t.amount : t.amount), 0);
+  const juros = items
+    .filter((t) => t.type === 'expense' && JUROS.test(t.description))
+    .reduce((a, t) => a + t.amount, 0);
+  const parcelas = items
+    .filter((t) => t.installment)
+    .map((t) => {
+      const [n, of] = t.installment!.split('/').map(Number);
+      return { description: t.description, amount: t.amount, restantes: of - n };
+    })
+    .filter((p) => p.restantes > 0)
+    .sort((a, b) => b.amount * b.restantes - a.amount * a.restantes);
+  return { total, juros, parcelas, due: eff(items[0]), count: items.length };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Previsão honesta: faixa, não número único (achado D)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * `otimista` é o que o motor projeta hoje: só recorrentes e parcelas.
+ * `pessimista` desconta o ritmo de gasto solto dos últimos 30 dias — que é o que
+ * de fato acontece todo mês. Mostrar só o otimista convida a planejar em cima de
+ * uma sobra que não existe.
+ */
+export function forecast(txs: Tx[], month: string, reserva = 0, today = todayISO()) {
+  const v = monthView(txs, month, reserva, today);
+  const variavel = dailyRate(txs, today) * daysInMonth(month);
+  return {
+    month,
+    income: v.income,
+    committed: v.committed,
+    variavel,
+    otimista: v.free,
+    pessimista: v.free - variavel,
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Extrato agrupado por dia (achado F / requisito I1)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export function byDay(items: Tx[]) {
+  const map = new Map<string, Tx[]>();
+  for (const t of items) {
+    const k = eff(t);
+    map.set(k, [...(map.get(k) ?? []), t]);
+  }
+  return [...map]
+    .sort((a, b) => b[0].localeCompare(a[0]))
+    .map(([date, list]) => ({
+      date,
+      items: list,
+      total: list.reduce((a, t) => a + (t.type === 'income' ? t.amount : -t.amount), 0),
+    }));
+}

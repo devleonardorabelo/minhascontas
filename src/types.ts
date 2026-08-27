@@ -17,6 +17,8 @@ export type Tx = {
 export type Settings = {
   apiKey: string;
   reserva: number;
+  /** Falso até ela responder as três perguntas iniciais. */
+  onboarded?: boolean;
 };
 
 export type DB = { tx: Tx[]; settings: Settings };

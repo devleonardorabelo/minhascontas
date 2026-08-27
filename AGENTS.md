@@ -40,7 +40,7 @@ decisões descartadas e o número que as descartou:
 | [specs/01-modelo-dados.md](specs/01-modelo-dados.md) | o `Tx`, por que tem duas datas, invariantes |
 | [specs/02-ia.md](specs/02-ia.md) | prompt, contrato da tool, custo, PDF protegido |
 | [specs/03-orcamento.md](specs/03-orcamento.md) | projeção de recorrentes e parcelas, regra do veredicto |
-| [specs/04-ux.md](specs/04-ux.md) | a persona, os 11 achados de UX, requisitos E1–E10 e a direção de UI |
+| [specs/04-ux.md](specs/04-ux.md) | a persona, os 11 achados de UX, requisitos E1–E10 (aplicados) e a direção de UI |
 
 ## Mapa
 
@@ -92,6 +92,10 @@ Cada uma custou uma sessão. Não reintroduza:
 - **A saída da IA é entrada não confiável.** Nada entra no banco sem passar pelo
   `toTx()` em `src/ai.ts`.
 - **`expo-file-system` não roda na web** — nunca importe fora de `readFile.ts`.
+- **Cor vem de `useC()`, nunca de hex na tela.** São dois temas, e toda combinação
+  de texto sobre superfície foi medida em AA. Um hex solto passa no typecheck e
+  quebra num dos temas — que é o bug que ninguém vê, porque ninguém testa os dois.
+- **`TAP = 48` é piso, não sugestão.** Botão, chip, campo, linha tocável e aba.
 - **Prompt de fatura é frágil.** Detalhar mais uma regra já derrubou a precisão de
   99,7% para 92% numa fatura real. Mexeu no prompt de `invoice`? Rode contra uma
   fatura de verdade e compare o total declarado antes de commitar. As quatro

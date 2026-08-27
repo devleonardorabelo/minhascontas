@@ -1,77 +1,100 @@
 import { useState } from 'react';
 import { Linking, ScrollView, Text } from 'react-native';
 import { saveSettings, useDB, wipe } from '../store';
-import { brl } from '../budget';
-import { Btn, C, Card, H, Input } from '../ui';
+import { brl, paydayOf } from '../budget';
+import { Btn, Card, H, Input, Meta, SP, useC } from '../ui';
 
 export default function Ajustes() {
+  const C = useC();
   const db = useDB();
-  const [key, setKey] = useState(db.settings.apiKey);
   const [reserva, setReserva] = useState(String(db.settings.reserva || ''));
-  const [armed, setArmed] = useState(false);
+  const [key, setKey] = useState(db.settings.apiKey);
+  const [avancado, setAvancado] = useState(false);
+  const [armado, setArmado] = useState(false);
+  const payday = paydayOf(db.tx);
 
-  const salvar = () => {
+  const salvarReserva = () => {
     const n = Number(reserva.replace(/\./g, '').replace(',', '.'));
-    saveSettings({ apiKey: key.trim(), reserva: Number.isFinite(n) ? n : 0 });
+    saveSettings({ reserva: Number.isFinite(n) && n > 0 ? n : 0 });
   };
 
   return (
-    <ScrollView contentContainerStyle={{ padding: 16, gap: 14, paddingBottom: 40 }}>
+    <ScrollView
+      contentContainerStyle={{ padding: SP.lg, gap: SP.md, paddingBottom: 48 }}
+      keyboardShouldPersistTaps="handled">
       <Card>
-        <H>Chave da Anthropic</H>
-        <Text style={{ color: C.dim, fontSize: 13, lineHeight: 19 }}>
-          O app não tem servidor nem conta. Você usa sua própria chave e paga só os tokens
-          que gastar. Ela fica guardada só neste aparelho — quem tiver o aparelho tem a chave.
+        <H>Meu dinheiro</H>
+        <Text style={{ color: C.dim, fontSize: 15, lineHeight: 22 }}>
+          A reserva é o que você quer deixar parado. Some do "dá para gastar", então você não
+          gasta sem querer.
         </Text>
         <Input
-          label="sk-ant-…"
-          value={key}
-          onChangeText={setKey}
-          autoCapitalize="none"
-          autoCorrect={false}
-          secureTextEntry
-          placeholder="cole aqui"
-        />
-        <Btn label="Salvar chave" onPress={salvar} />
-        <Btn
-          label="Pegar uma chave em console.anthropic.com"
-          kind="ghost"
-          onPress={() => Linking.openURL('https://console.anthropic.com/settings/keys')}
-        />
-      </Card>
-
-      <Card>
-        <H>Reserva</H>
-        <Text style={{ color: C.dim, fontSize: 13, lineHeight: 19 }}>
-          Valor que o app finge que não existe. Sai do "livre para gastar" e do simulador.
-        </Text>
-        <Input
-          label="Guardar por mês"
           value={reserva}
           onChangeText={setReserva}
           keyboardType="decimal-pad"
           inputMode="decimal"
           placeholder="0,00"
+          label="Guardar por mês"
         />
-        <Btn label="Salvar reserva" onPress={salvar} />
+        <Btn label="Salvar" onPress={salvarReserva} />
+        <Meta>
+          {payday
+            ? `Seu salário cai todo dia ${payday}. Eu descubro isso sozinho pela sua entrada mensal.`
+            : 'Assim que você anotar uma entrada mensal, eu descubro o dia do seu pagamento.'}
+        </Meta>
       </Card>
 
       <Card>
-        <H>Dados</H>
-        <Text style={{ color: C.dim, fontSize: 13, lineHeight: 19 }}>
-          {db.tx.length} lançamentos neste aparelho · reserva atual {brl(db.settings.reserva)}.
-          Não há backup nem sincronia: desinstalar apaga tudo.
+        <H>Seus dados</H>
+        <Text style={{ color: C.dim, fontSize: 15, lineHeight: 22 }}>
+          {db.tx.length} {db.tx.length === 1 ? 'coisa anotada' : 'coisas anotadas'} · reserva de{' '}
+          {brl(db.settings.reserva)}. Fica tudo neste aparelho: não tem conta, não tem nuvem, e
+          desinstalar apaga.
         </Text>
         <Btn
-          label={armed ? 'Tocar de novo para apagar tudo' : 'Apagar todos os lançamentos'}
+          label={armado ? 'Toque de novo para apagar tudo' : 'Apagar tudo'}
           kind="danger"
-          onPress={() => {
-            if (armed) {
-              wipe();
-              setArmed(false);
-            } else setArmed(true);
-          }}
+          onPress={() => (armado ? (wipe(), setArmado(false)) : setArmado(true))}
+          hint="Precisa tocar duas vezes"
         />
+      </Card>
+
+      <Card>
+        <H
+          right={
+            <Text
+              style={{ color: C.accent, fontSize: 15, fontWeight: '600' }}
+              onPress={() => setAvancado((v) => !v)}
+              accessibilityRole="button">
+              {avancado ? 'Fechar' : 'Abrir'}
+            </Text>
+          }>
+          Avançado
+        </H>
+        <Text style={{ color: C.dim, fontSize: 15, lineHeight: 22 }}>
+          Ler fatura, conta e contracheque automaticamente precisa de uma chave da Anthropic.
+          {db.settings.apiKey ? ' Já está configurada.' : ' Anotar na mão funciona sem ela.'}
+        </Text>
+        {avancado ? (
+          <>
+            <Input
+              value={key}
+              onChangeText={setKey}
+              autoCapitalize="none"
+              autoCorrect={false}
+              secureTextEntry
+              placeholder="sk-ant-…"
+              label="Chave da Anthropic"
+              help="Fica guardada só neste aparelho. Quem tiver o aparelho tem a chave. Você paga direto à Anthropic, só o que usar."
+            />
+            <Btn label="Salvar chave" onPress={() => saveSettings({ apiKey: key.trim() })} />
+            <Btn
+              label="Onde pegar uma chave"
+              kind="ghost"
+              onPress={() => Linking.openURL('https://console.anthropic.com/settings/keys')}
+            />
+          </>
+        ) : null}
       </Card>
     </ScrollView>
   );

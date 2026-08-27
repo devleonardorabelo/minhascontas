@@ -61,3 +61,5 @@ export const removeBatch = (batchId: string) =>
 export const saveSettings = (patch: Partial<Settings>) =>
   set({ ...db, settings: { ...db.settings, ...patch } });
 export const wipe = () => set({ ...EMPTY, settings: db.settings });
+export const updateTx = (id: string, patch: Partial<Tx>) =>
+  set({ ...db, tx: db.tx.map((t) => (t.id === id ? { ...t, ...patch } : t)) });
