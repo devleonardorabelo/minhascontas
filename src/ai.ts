@@ -12,7 +12,8 @@ const MODEL = 'claude-haiku-4-5';
 export type Doc = { base64: string; mediaType: string; name: string };
 export type ExtractInput = { kind: 'text'; text: string } | { kind: 'files'; files: Doc[] };
 /** `warning` é conferência, não erro: os itens vêm mesmo assim, para o usuário decidir. */
-export type ExtractResult = { items: Tx[]; warning?: string };
+export type ExtractWarning = { text: string; diff?: number; dueDate?: string };
+export type ExtractResult = { items: Tx[]; warning?: ExtractWarning };
 
 const SYSTEM = `Você extrai lançamentos financeiros de documentos e frases em português do Brasil.
 Responda SEMPRE chamando a ferramenta salvar. Valores em reais, sempre positivos.
@@ -243,6 +244,8 @@ export async function extract(input: ExtractInput, apiKey: string): Promise<Extr
   if (!txs.length) throw new Error('Nada reconhecido nesse conteúdo.');
 
   const avisos: string[] = [];
+  let diff: number | undefined;
+
   if (res.stop_reason === 'max_tokens') {
     avisos.push('A leitura foi cortada no meio — confira se o fim do documento entrou.');
   }
@@ -252,12 +255,34 @@ export async function extract(input: ExtractInput, apiKey: string): Promise<Extr
   if (Number.isFinite(declarado) && declarado > 0) {
     const soma = txs.reduce((a, t) => a + (t.type === 'expense' ? t.amount : -t.amount), 0);
     if (Math.abs(soma - declarado) > 0.5) {
+      diff = Math.round((declarado - soma) * 100) / 100;
       avisos.push(
-        `A soma dos lançamentos deu ${money(soma)} e o documento declara ${money(declarado)}. Confira antes de salvar.`
+        `A soma dos lançamentos deu ${money(soma)} e o documento declara ${money(declarado)}.`
       );
     }
   }
-  return { items: txs, warning: avisos.join(' ') || undefined };
+
+  return {
+    items: txs,
+    warning: avisos.length
+      ? { text: avisos.join(' '), diff, dueDate: isDate(out.dueDate) ? out.dueDate : undefined }
+      : undefined,
+  };
+}
+
+/** Fecha a conta com o total declarado quando um item escapou da leitura. */
+export function diffTx(diff: number, dueDate?: string): Tx {
+  const date = dueDate ?? todayISO();
+  return {
+    id: newId(),
+    type: diff > 0 ? 'expense' : 'income',
+    amount: Math.abs(diff),
+    date,
+    dueDate,
+    description: 'Diferença não identificada na leitura',
+    category: 'Outros',
+    source: 'invoice',
+  };
 }
 
 const money = (n: number) => n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });

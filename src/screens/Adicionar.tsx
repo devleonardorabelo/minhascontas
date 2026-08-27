@@ -2,7 +2,7 @@ import { useState } from 'react';
 import * as DocumentPicker from 'expo-document-picker';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { addTx, useDB } from '../store';
-import { extract, localParse, MissingKey, type ExtractResult } from '../ai';
+import { diffTx, extract, localParse, MissingKey, type ExtractResult, type ExtractWarning } from '../ai';
 import { readBase64 } from '../readFile';
 import { brl } from '../budget';
 import { Btn, C, Card, H, mono, st } from '../ui';
@@ -16,7 +16,7 @@ export default function Adicionar() {
   const [preview, setPreview] = useState<Tx[]>([]);
   const [busy, setBusy] = useState<'' | 'text' | 'file'>('');
   const [err, setErr] = useState('');
-  const [aviso, setAviso] = useState('');
+  const [aviso, setAviso] = useState<ExtractWarning | null>(null);
 
   const run = async (fn: () => Promise<ExtractResult>, which: 'text' | 'file') => {
     setBusy(which);
@@ -24,7 +24,7 @@ export default function Adicionar() {
     try {
       const { items, warning } = await fn();
       setPreview((p) => [...p, ...items]);
-      setAviso(warning ?? '');
+      setAviso(warning ?? null);
     } catch (e: any) {
       setErr(e instanceof MissingKey ? e.message : e?.message || 'Falhou. Tente de novo.');
     } finally {
@@ -77,7 +77,7 @@ export default function Adicionar() {
   const save = () => {
     addTx(preview.filter((t) => t.amount > 0));
     setPreview([]);
-    setAviso('');
+    setAviso(null);
   };
 
   return (
@@ -118,7 +118,17 @@ export default function Adicionar() {
 
       {aviso && preview.length > 0 ? (
         <Card style={{ borderColor: C.warn }}>
-          <Text style={{ color: C.warn, fontSize: 13, lineHeight: 19 }}>{aviso}</Text>
+          <Text style={{ color: C.warn, fontSize: 13, lineHeight: 19 }}>{aviso.text}</Text>
+          {aviso.diff ? (
+            <Btn
+              label={`Lançar a diferença de ${brl(Math.abs(aviso.diff))}`}
+              kind="ghost"
+              onPress={() => {
+                setPreview((p) => [...p, diffTx(aviso.diff!, aviso.dueDate)]);
+                setAviso(null);
+              }}
+            />
+          ) : null}
         </Card>
       ) : null}
 
@@ -164,7 +174,7 @@ export default function Adicionar() {
               kind="ghost"
               onPress={() => {
                 setPreview([]);
-                setAviso('');
+                setAviso(null);
               }}
             />
           </View>
