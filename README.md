@@ -26,6 +26,27 @@ frases no formato `descrição 32,90`.
 npm test        # motor de orçamento
 ```
 
+## Instalar no celular
+
+Sem loja, sem conta Apple, sem servidor de desenvolvimento rodando.
+
+**iPhone e Android — o caminho fácil.** Instale o **Expo Go** (App Store ou Play
+Store) e abra este link no aparelho:
+
+```
+exp://u.expo.dev/f8b7f83e-903f-4dda-a7e4-e0eefbae2dbd/group/e2d87692-155a-476f-9c4f-197be063ca5b
+```
+
+O JS vem embutido no update, então funciona sem `npm start`. Publicar uma versão
+nova é `npx eas-cli update --branch preview --environment preview -m "o que mudou"`.
+
+**Android — APK próprio.** O build de desenvolvimento sai em
+[expo.dev/accounts/leonardorabelo/projects/minhascontas/builds](https://expo.dev/accounts/leonardorabelo/projects/minhascontas/builds);
+baixe o `.apk` e instale. Esse precisa do Metro para carregar o JS.
+
+**iPhone com ícone próprio** exige conta Apple Developer (US$ 99/ano) e um login
+interativo na Apple. Sem ela, o Expo Go é o caminho.
+
 ## Como funciona
 
 | | |

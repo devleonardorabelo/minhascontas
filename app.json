@@ -35,6 +35,12 @@
       }
     },
     "owner": "leonardorabelo",
-    "primaryColor": "#ae1800"
+    "primaryColor": "#ae1800",
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/f8b7f83e-903f-4dda-a7e4-e0eefbae2dbd"
+    }
   }
 }

@@ -64,6 +64,7 @@ runtime — é o que o torna testável sem mock.
 
 ```bash
 npm run web          # também: ios, android
+npx eas-cli update --branch preview --environment preview -m "..."   # publica no Expo Go
 npm test             # motor de orçamento e contrato da chamada de API
 npx tsc --noEmit     # typecheck
 npx expo export --platform ios --platform android --platform web --output-dir /tmp/b
@@ -110,6 +111,10 @@ Cada uma custou uma sessão. Não reintroduza:
 - **Raio 0 em tudo.** Um `borderRadius` no diff é regressão do Modernist.
 - **`TAP = 56` é piso.** Botão, aba e chip grande; 44 em chip de categoria e
   campo de linha.
+- **`runtimeVersion` é `{policy: 'sdkVersion'}` e tem que continuar.** O Expo Go
+  só carrega update cujo runtime é o do próprio SDK (`exposdk:57.0.0`). Sem a
+  política, o runtime vira a `version` do app (1.0.0), o update publica normal e
+  o Expo Go simplesmente ignora — sem erro nenhum.
 - **Prompt de fatura é frágil.** Detalhar mais uma regra já derrubou a precisão de
   99,7% para 92% numa fatura real. Mexeu no prompt de `invoice`? Rode contra uma
   fatura de verdade e compare o total declarado antes de commitar. As quatro
